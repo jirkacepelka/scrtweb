@@ -1,0 +1,173 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Card from "../components/ui/Card.astro";
+import Badge from "../components/ui/Badge.astro";
+import Button from "../components/ui/Button.astro";
+import BrandIcon from "../components/ui/BrandIcon.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { wallets } from "../data/wallets";
+
+const featured = wallets.find((w) => w.recommended) ?? wallets[0];
+const others = wallets.filter((w) => w !== featured);
+const byName = (name: string) => wallets.find((w) => w.name === name);
+
+const guide = [
+  {
+    title: "Starting out",
+    wallet: byName("Keplr"),
+    body: "Works with nearly every Secret app and the staking dashboard.",
+  },
+  {
+    title: "Mostly on your phone",
+    wallet: byName("Leap"),
+    body: "Stake and claim rewards on the go. Keplr mobile works too.",
+  },
+  {
+    title: "Holding a lot",
+    wallet: byName("Ledger"),
+    body: "Your keys never leave the device, even when you use Keplr or Leap.",
+  },
+];
+
+const safety = [
+  {
+    icon: "ph:key",
+    title: "Your recovery phrase is the wallet",
+    body: "Write it down on paper and store it offline. Anyone with these words controls your funds.",
+  },
+  {
+    icon: "ph:shield-warning",
+    title: "Nobody will ever ask for it",
+    body: "Not support, not a validator, not this website. Anyone asking for your phrase is trying to steal from you.",
+  },
+  {
+    icon: "ph:link-break",
+    title: "Check every link",
+    body: "Install wallets only from their official sites or app stores, and bookmark the apps you use.",
+  },
+];
+---
+
+<PageLayout
+  title="Wallets"
+  intro="A wallet holds your SCRT and lets you stake and use apps. All of these are free and take about a minute to set up."
+  description="The best wallets for Secret Network and SCRT: Keplr, Leap, Ledger and StarShell. Which one to choose and how to stay safe."
+>
+  <Section>
+    <!-- Recommended wallet, large -->
+    <div
+      class="relative grid overflow-hidden rounded-xl border border-accent/30 bg-[radial-gradient(40rem_24rem_at_0%_0%,rgb(255_57_18/0.18),transparent_65%)] bg-surface lg:grid-cols-[1.3fr_1fr]"
+      data-reveal
+    >
+      <div class="p-8 md:p-12">
+        <div class="flex items-center gap-5">
+          <BrandIcon src={featured.logo} size="lg" onLight={featured.logoOnLight} />
+          <div>
+            <Badge tone="accent">Recommended</Badge>
+            <h2 class="type-h2 mt-2 text-fg">{featured.name}</h2>
+          </div>
+        </div>
+        <p class="type-lead mt-8 max-w-[46ch]">{featured.description}</p>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href={featured.href} size="lg">
+            Get {featured.name}
+          </Button>
+          <ul class="flex flex-wrap gap-2" aria-label="Platforms">
+            {featured.platforms.map((p) => (
+              <li>
+                <Badge>{p}</Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      {featured.highlights && (
+        <ul class="flex flex-col justify-center gap-6 border-t border-line p-8 md:p-12 lg:border-t-0 lg:border-l">
+          {featured.highlights.map((h) => (
+            <li class="flex gap-4">
+              <span class="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-pill bg-accent-900 text-accent-300">
+                <Icon name="ph:check-bold" class="size-3.5" aria-hidden="true" />
+              </span>
+              <span class="leading-relaxed text-fg">{h}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    <!-- The rest -->
+    <div class="mt-4 grid gap-4 md:grid-cols-3">
+      {others.map((w, i) => (
+        <Card href={w.href} class="flex flex-col" style={`--reveal-i:${i + 1}`}>
+          <div class="flex items-start justify-between">
+            <BrandIcon src={w.logo} onLight={w.logoOnLight} />
+            <Icon
+              name="ph:arrow-up-right"
+              class="size-5 text-faint transition-colors group-hover:text-fg"
+              aria-hidden="true"
+            />
+          </div>
+          <h3 class="type-h3 mt-8 text-fg">{w.name}</h3>
+          <p class="mt-1 text-sm text-accent-200">Best for {w.bestFor.toLowerCase()}</p>
+          <p class="mt-4 leading-relaxed text-muted">{w.description}</p>
+          <ul class="mt-auto flex flex-wrap gap-2 pt-8" aria-label="Platforms">
+            {w.platforms.map((p) => (
+              <li>
+                <Badge>{p}</Badge>
+              </li>
+            ))}
+          </ul>
+          <span class="sr-only">(opens {w.name} in a new tab)</span>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionHeading title="Not sure which one?" class="mb-12 md:mb-16" />
+    <div class="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-3">
+      {guide.map((g, i) => (
+        <div class="flex flex-col bg-ink p-8" data-reveal style={`--reveal-i:${i}`}>
+          <p class="text-sm text-muted">{g.title}</p>
+          {g.wallet && (
+            <div class="mt-6 flex items-center gap-3">
+              <BrandIcon src={g.wallet.logo} size="sm" onLight={g.wallet.logoOnLight} />
+              <span class="type-h3 text-fg">{g.wallet.name}</span>
+            </div>
+          )}
+          <p class="mt-3 leading-relaxed text-muted">{g.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
+      <SectionHeading
+        eyebrow="Stay safe"
+        title="Three rules that <em>protect your SCRT</em>"
+        class="lg:sticky lg:top-28 lg:self-start"
+      />
+      <ol class="divide-y divide-line border-y border-line">
+        {safety.map((s, i) => (
+          <li class="grid grid-cols-[3rem_1fr] gap-4 py-8" data-reveal style={`--reveal-i:${i}`}>
+            <Icon name={s.icon} class="size-7 text-accent-300" aria-hidden="true" />
+            <div>
+              <h3 class="type-h3 text-fg">{s.title}</h3>
+              <p class="mt-2 max-w-[52ch] leading-relaxed text-muted">{s.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Wallet ready? <em>Get your first SCRT.</em>"
+    primary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
+    secondary={{ label: "Start staking", href: "/staking" }}
+  />
+</PageLayout>

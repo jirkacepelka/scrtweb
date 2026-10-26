@@ -1,0 +1,124 @@
+---
+/**
+ * Blog post page: inset header panel (same language as PageLayout), optional cover,
+ * prose body with a sticky "On this page" list built from the post's h2 headings,
+ * then related posts.
+ */
+import type { MarkdownHeading } from "astro";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "./BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Badge from "../components/ui/Badge.astro";
+import ShaderField from "../components/sections/ShaderField.astro";
+import PostCard from "../components/sections/PostCard.astro";
+import { formatDate, readingTime, tagSlug, type Post } from "../lib/content";
+
+interface Props {
+  post: Post;
+  related: Post[];
+  headings?: MarkdownHeading[];
+}
+const { post, related, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, author, tags, cover, coverAlt } = post.data;
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={pubDate}
+  image={cover?.src}
+>
+  <article>
+    <header class="px-2 pt-2 sm:px-3 md:px-4">
+      <div class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem]">
+        <ShaderField intensity={0.45} class="opacity-80" />
+        <div
+          class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/50 to-transparent"
+          aria-hidden="true"
+        ></div>
+        <div class="relative container-page pt-12 pb-14 md:pt-20 md:pb-20">
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-2 text-sm text-fg/70 transition-colors hover:text-fg"
+          >
+            <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
+            All posts
+          </a>
+          <h1 class="type-h1 mt-10 max-w-4xl animate-rise text-fg">{title}</h1>
+          <p class="type-lead mt-6 max-w-[58ch] animate-rise text-fg/70 [animation-delay:80ms]">
+            {description}
+          </p>
+          <div class="mt-10 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-fg/60">
+            <span class="text-fg/80">{author}</span>
+            <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+            {updatedDate && <span>Updated {formatDate(updatedDate)}</span>}
+            <span>{readingTime(post.body)}</span>
+            {tags.length > 0 && (
+              <ul class="flex flex-wrap gap-2">
+                {tags.map((t) => (
+                  <li>
+                    <a href={`/blog/tags/${tagSlug(t)}`}>
+                      <Badge class="bg-ink/40 hover:text-fg">{t}</Badge>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {cover && (
+      <div class="container-page pt-12">
+        <Image
+          src={cover}
+          alt={coverAlt ?? ""}
+          widths={[800, 1200, 1600]}
+          sizes="(min-width: 1216px) 1152px, 100vw"
+          class="w-full rounded-xl border border-line"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <div class="container-page grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-20">
+      <div class="prose-secret min-w-0">
+        <slot />
+      </div>
+      {toc.length > 1 && (
+        <aside class="hidden lg:block" aria-label="On this page">
+          <nav class="sticky top-28 border-l border-line pl-5">
+            <p class="text-sm font-medium text-fg">On this page</p>
+            <ul class="mt-4 space-y-3 text-sm">
+              {toc.map((h) => (
+                <li>
+                  <a
+                    href={`#${h.slug}`}
+                    class="block leading-snug text-muted transition-colors hover:text-fg"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      )}
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <Section spacing="md" class="border-t border-line">
+      <h2 class="type-h3 mb-6 text-fg md:text-2xl">Keep reading</h2>
+      <div class="grid gap-3 md:grid-cols-2">
+        {related.map((p, i) => (
+          <PostCard post={p} variant="row" index={i} />
+        ))}
+      </div>
+    </Section>
+  )}
+</BaseLayout>

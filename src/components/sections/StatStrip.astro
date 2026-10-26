@@ -1,0 +1,30 @@
+---
+/** Row of key figures with a source/date line. Values come from src/data/stats.ts. */
+import Stat from "../ui/Stat.astro";
+import type { Stat as StatItem } from "../../data/stats";
+
+interface Props {
+  stats: StatItem[];
+  asOf?: string;
+  source?: string;
+}
+const { stats, asOf, source = "Secret Network mainnet" } = Astro.props;
+const date = asOf
+  ? new Date(asOf).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+  : undefined;
+---
+
+<div>
+  <dl class="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:divide-x lg:divide-line">
+    {stats.map((s, i) => (
+      <div class:list={["lg:px-8", i === 0 && "lg:pl-0"]} style={`--reveal-i:${i}`}>
+        <Stat {...s} />
+      </div>
+    ))}
+  </dl>
+  {date && (
+    <p class="mt-10 text-xs text-faint">
+      Source: {source}, {date}.
+    </p>
+  )}
+</div>

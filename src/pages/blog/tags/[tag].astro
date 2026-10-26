@@ -1,0 +1,30 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+import BlogIndex from "../../../components/sections/BlogIndex.astro";
+import { getPosts, getTags, tagSlug, type Post } from "../../../lib/content";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const tags = getTags(posts);
+  return tags.map((tag) => ({
+    params: { tag: tagSlug(tag) },
+    props: { tag, tags, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+
+interface Props {
+  tag: string;
+  tags: string[];
+  posts: Post[];
+}
+const { tag, tags, posts } = Astro.props;
+---
+
+<PageLayout
+  title={`${tag} | Blog`}
+  heading={tag}
+  intro={`Posts about ${tag.toLowerCase()} from Secret Network.`}
+  description={`Secret Network blog posts tagged ${tag}.`}
+>
+  <BlogIndex posts={posts} tags={tags} activeTag={tag} />
+</PageLayout>

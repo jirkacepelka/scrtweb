@@ -1,0 +1,39 @@
+---
+/**
+ * Bordered container. Pass `href` to make the whole card a link (adds hover state).
+ * tone: "default" (surface), "accent" (orange-tinted highlight), "plain" (border only).
+ */
+interface Props {
+  href?: string;
+  tone?: "default" | "accent" | "plain";
+  class?: string;
+  external?: boolean;
+  /** e.g. "--reveal-i:2" to stagger the reveal animation. */
+  style?: string;
+}
+const {
+  href,
+  tone = "default",
+  class: className,
+  external = href?.startsWith("http"),
+  style,
+} = Astro.props;
+const tones = {
+  default: "bg-surface border-line",
+  accent: "bg-accent-900/60 border-accent/30",
+  plain: "border-line",
+};
+const classes = [
+  "relative block rounded-xl border p-6 md:p-8",
+  tones[tone],
+  href &&
+    "group transition-[border-color,background-color] duration-300 ease-out-expo hover:border-line-strong hover:bg-surface-2",
+  className,
+];
+const Tag = href ? "a" : "div";
+const linkAttrs = href && external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+---
+
+<Tag class:list={classes} href={href} style={style} {...linkAttrs} data-reveal>
+  <slot />
+</Tag>

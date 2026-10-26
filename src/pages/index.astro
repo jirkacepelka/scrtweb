@@ -1,0 +1,166 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Button from "../components/ui/Button.astro";
+import Hero from "../components/sections/Hero.astro";
+import StepList from "../components/sections/StepList.astro";
+import PrivacySplit from "../components/sections/PrivacySplit.astro";
+import StatStrip from "../components/sections/StatStrip.astro";
+import FeatureGrid, { type Feature } from "../components/sections/FeatureGrid.astro";
+import PostCard from "../components/sections/PostCard.astro";
+import RoadmapSummary from "../components/sections/RoadmapSummary.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { partners } from "../data/partners";
+import { apps, heroApps } from "../data/ecosystem";
+import { homeStats, statsAsOf } from "../data/stats";
+import { site, legacyPages } from "../config/site";
+import { getPosts, getRoadmap } from "../lib/content";
+
+const posts = (await getPosts()).slice(0, 3);
+const roadmap = await getRoadmap();
+
+const steps = [
+  {
+    icon: "ph:wallet",
+    title: "Get a wallet",
+    body: "Install Keplr or Leap in a minute. Your wallet holds your SCRT and connects you to apps.",
+    href: "/wallets",
+    linkLabel: "Choose a wallet",
+  },
+  {
+    icon: "ph:coins",
+    title: "Get SCRT",
+    body: "Buy on an exchange, pay with a card or swap tokens you already own.",
+    href: "/scrt#get-scrt",
+    linkLabel: "Ways to buy",
+  },
+  {
+    icon: "ph:plant",
+    title: "Stake and earn",
+    body: "Delegate to a validator to help secure the network and earn staking rewards.",
+    href: "/staking",
+    linkLabel: "How staking works",
+  },
+];
+
+const features: [Feature, Feature, Feature, Feature] = [
+  {
+    title: "Apps that keep your data private",
+    body: `Swap, message, store and compute in apps where your data stays encrypted. Browse ${apps.length} of them.`,
+    icon: "ph:squares-four",
+    status: "live",
+    href: "/ecosystem",
+    visual: "glow",
+  },
+  {
+    title: "SecretVM",
+    body: "Confidential virtual machines that run whole apps and AI agents with verifiable, attested privacy.",
+    icon: "ph:cpu",
+    status: "live",
+    href: legacyPages.secretVm,
+    visual: "grid",
+  },
+  {
+    title: "Private tokens",
+    body: "Wrap SCRT into sSCRT to hide your balance and transfer amounts.",
+    icon: "ph:lock-key",
+    status: "live",
+    href: site.dashboardUrl,
+  },
+  {
+    title: "Secret Bridge",
+    body: "Bring assets from Ethereum and Cosmos chains, and make them private.",
+    icon: "ph:bridge",
+    status: "live",
+    href: "https://dash.scrt.network/bridge",
+  },
+];
+---
+
+<BaseLayout>
+  <Hero
+    title="Privacy for everyone.<br /><em>Start with SCRT.</em>"
+    subtitle="Secret Network keeps your data encrypted, even while apps use it. Get, stake and use SCRT in minutes."
+    primary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
+    secondary={{ label: "Explore Ecosystem", href: "/ecosystem" }}
+    apps={heroApps}
+    partners={partners}
+  />
+
+  <Section spacing="md">
+    <StatStrip stats={homeStats} asOf={statsAsOf} />
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionHeading
+      title="Three steps to your first SCRT. <em>No experience needed.</em>"
+      class="mb-14 max-w-4xl md:mb-20"
+    />
+    <StepList steps={steps} />
+  </Section>
+
+  <Section class="border-t border-line">
+    <PrivacySplit
+      eyebrow="What is Secret Network"
+      title="A blockchain that keeps secrets"
+      body="On most blockchains, every balance and every app interaction is public forever. Secret runs smart contracts inside secure hardware, so the data they handle stays encrypted, even from the people running the network."
+      privateItems={[
+        "Data stored by apps",
+        "What you send to apps, and their replies",
+        "Private token balances and amounts",
+      ]}
+      publicItems={[
+        "Plain SCRT transfers between wallets",
+        "Staking, rewards and governance votes",
+        "Which app an address used, and when",
+      ]}
+      cta={{ label: "Read the full breakdown", href: "/blog/what-is-private-on-secret" }}
+    />
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionHeading
+      title="SCRT is the start. <em>Here is what is built on it.</em>"
+      class="mb-14 max-w-4xl md:mb-20"
+    />
+    <FeatureGrid items={features} />
+  </Section>
+
+  {posts.length > 0 && (
+    <Section class="border-t border-line">
+      <div class="mb-12 flex flex-wrap items-end justify-between gap-6 md:mb-16">
+        <SectionHeading title="Latest from the blog" />
+        <Button href="/blog" variant="ghost">
+          All posts
+        </Button>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post, i) => (
+          <PostCard post={post} index={i} />
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <Section class="border-t border-line">
+    <div class="mb-12 flex flex-wrap items-end justify-between gap-6 md:mb-16">
+      <SectionHeading
+        eyebrow="Roadmap"
+        title="Secret 2.0 is coming. <em>Here is how far it is.</em>"
+        class="max-w-4xl"
+      />
+      <Button href="/roadmap" variant="ghost">
+        Roadmap
+      </Button>
+    </div>
+    <RoadmapSummary overall={roadmap.overall} tracks={roadmap.tracks} linkTracks />
+  </Section>
+
+  <CtaBand
+    title="Your first SCRT is a few minutes away"
+    body="Pick a wallet, get SCRT and start staking. Everything you need is on the next page."
+    primary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
+    secondary={{ label: "Choose a wallet", href: "/wallets" }}
+  />
+</BaseLayout>

@@ -1,0 +1,279 @@
+---
+/**
+ * Homepage hero (ArtCraft-inspired), full-bleed edge to edge: centred headline + CTAs over the
+ * dot-wave background. Real ecosystem app icons slowly orbit around the text on two rounded-rectangle
+ * elliptical rings, all turning the same way. Icons are shown as they are:
+ * no border, no blur, full opacity; nearer (lower) positions are slightly larger.
+ * Partner logos scroll continuously in the bottom-right corner. Below md the orbit is replaced
+ * by a row of icons.
+ */
+import Button from "../ui/Button.astro";
+import AppIcon from "../ui/AppIcon.astro";
+import ShaderField from "./ShaderField.astro";
+import type { App } from "../../data/ecosystem";
+import type { Partner } from "../../data/partners";
+
+interface Props {
+  title: string;
+  subtitle: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string };
+  apps: App[];
+  partners?: Partner[];
+  partnersLabel?: string;
+}
+const {
+  title,
+  subtitle,
+  primary,
+  secondary,
+  apps,
+  partners = [],
+  partnersLabel = "Working with",
+} = Astro.props;
+
+// Rings: radius as a fraction of the panel's half width/height, seconds per lap, icon sizes.
+// Radii keep the icons outside the centre column of text. Same lap time for both rings, so
+// the whole field turns together; icons move at constant speed along their path.
+const rings = [
+  { rx: 0.92, ry: 0.86, period: 180, count: 9, sizes: [84, 72, 78] },
+  { rx: 0.72, ry: 0.66, period: 180, count: 9, sizes: [58, 50, 54] },
+];
+let n = 0;
+const tiles = rings.flatMap((ring, ri) =>
+  Array.from({ length: ring.count }, (_, i) => {
+    const app = apps[n++ % apps.length];
+    return {
+      app,
+      ring: ri,
+      // position along the path (0..1), inner ring offset by half a step: icons never collide
+      u: (i + ri * 0.5) / ring.count,
+      size: ring.sizes[i % ring.sizes.length],
+    };
+  }),
+);
+---
+
+<section>
+  <div
+    class="relative isolate overflow-hidden border-b border-line"
+    data-orbit={JSON.stringify(rings.map(({ rx, ry, period }) => ({ rx, ry, period })))}
+  >
+    <ShaderField intensity={0.6} />
+
+    <!-- Orbiting app icons (desktop) -->
+    <div class="pointer-events-none absolute inset-0 z-0 hidden md:block" aria-hidden="true">
+      {tiles.map((t) => (
+        <div
+          class="orbit-tile absolute top-1/2 left-1/2"
+          data-ring={t.ring}
+          data-u={t.u.toFixed(4)}
+        >
+          <AppIcon
+            src={t.app.icon}
+            size={t.size}
+            ring={false}
+            eager
+            class="shadow-[0_24px_60px_-24px_rgb(0_0_0/0.9)]"
+          />
+        </div>
+      ))}
+    </div>
+
+    <!-- Darkens whatever passes behind the text so it stays readable -->
+    <div
+      class="pointer-events-none absolute inset-0 z-[5] bg-[radial-gradient(ellipse_44%_42%_at_50%_50%,rgb(5_5_5/0.92),rgb(5_5_5/0.6)_55%,transparent_100%)]"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative z-10 container-page flex min-h-[38rem] flex-col items-center justify-center py-24 text-center md:min-h-[42rem] md:py-20">
+      <h1 class="type-display mx-auto max-w-4xl animate-rise text-fg">
+        <Fragment set:html={title} />
+      </h1>
+      <p class="type-lead mx-auto mt-7 max-w-[34rem] animate-rise text-fg/70 [animation-delay:90ms]">
+        {subtitle}
+      </p>
+      <div class="mt-10 flex animate-rise flex-wrap justify-center gap-3 [animation-delay:180ms]">
+        <Button href={primary.href} size="lg">
+          {primary.label}
+        </Button>
+        {secondary && (
+          <Button
+            href={secondary.href}
+            size="lg"
+            variant="secondary"
+            class="bg-ink/50 backdrop-blur-md"
+          >
+            {secondary.label}
+          </Button>
+        )}
+      </div>
+
+      <!-- Mobile: a row of icons instead of the orbit -->
+      <ul class="mt-12 flex justify-center gap-2 md:hidden" aria-hidden="true">
+        {apps.slice(0, 6).map((app) => (
+          <li>
+            <AppIcon src={app.icon} size={44} ring={false} />
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Darkens the bottom-right corner so the partner strip reads over passing icons -->
+    {partners.length > 0 && (
+      <div
+        class="pointer-events-none absolute right-0 bottom-0 z-[5] hidden h-60 w-[42rem] bg-[radial-gradient(ellipse_100%_100%_at_100%_100%,rgb(5_5_5/0.98),rgb(5_5_5/0.93)_50%,rgb(5_5_5/0.6)_75%,transparent_100%)] md:block"
+        aria-hidden="true"
+      />
+    )}
+
+    <!-- Partners: a continuously scrolling strip in the bottom-right corner -->
+    <!-- (z-10: always above the orbiting icons) -->
+    {partners.length > 0 && (
+      <div class="relative z-10 px-6 pb-8 md:absolute md:right-8 md:bottom-8 md:w-[30rem] md:p-0">
+        <p class="mb-4 text-center font-mono text-sm text-faint md:text-right">{partnersLabel}</p>
+        <div class="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)]">
+          <div class="flex w-max animate-marquee">
+            {[0, 1].map((copy) => (
+              <ul
+                class="flex shrink-0 items-center gap-14 pr-14"
+                aria-hidden={copy === 1 ? "true" : undefined}
+              >
+                {[...partners, ...partners].map((p) => (
+                  <li class="flex shrink-0 items-center gap-3">
+                    <img
+                      src={`/partners/${p.slug}.svg`}
+                      alt={copy === 0 && p.wordmark ? p.name : ""}
+                      width="32"
+                      height="32"
+                      class:list={["opacity-85", p.wordmark ? "h-8 w-auto scale-[1.5]" : "size-8"]}
+                    />
+                    {!p.wordmark && (
+                      <span class="text-xl font-medium tracking-tight text-muted">{p.name}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .orbit-tile {
+    translate: -50% -50%;
+    opacity: 0;
+    transition: opacity 1s ease;
+    will-change: transform;
+  }
+  .orbit-tile[data-ready] {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Moves each icon along its ring at constant speed. Each ring is a superellipse (rounded
+  // rectangle) sampled by arc length, so icons never speed up on the long sides or slow down in
+  // corners. Paths are rebuilt when the panel resizes. Time only advances while visible, so
+  // returning to the tab never makes icons jump. Static with reduced motion.
+  const panel = document.querySelector<HTMLElement>("[data-orbit]");
+  if (panel) {
+    type Ring = { rx: number; ry: number; period: number };
+    const rings: Ring[] = JSON.parse(panel.dataset.orbit!);
+    const tiles = [...panel.querySelectorAll<HTMLElement>(".orbit-tile")].map((el) => ({
+      el,
+      ring: Number(el.dataset.ring),
+      u: Number(el.dataset.u),
+    }));
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const SAMPLES = 720;
+    type Path = {
+      xs: Float32Array;
+      ys: Float32Array;
+      lens: Float32Array;
+      total: number;
+      ry: number;
+    };
+    let paths: Path[] = [];
+    const squircle = (v: number) => Math.sign(v) * Math.sqrt(Math.abs(v));
+
+    const build = () => {
+      const w = panel.clientWidth / 2;
+      const h = panel.clientHeight / 2;
+      paths = rings.map(({ rx, ry }) => {
+        const xs = new Float32Array(SAMPLES + 1);
+        const ys = new Float32Array(SAMPLES + 1);
+        const lens = new Float32Array(SAMPLES + 1);
+        for (let i = 0; i <= SAMPLES; i++) {
+          const a = (i / SAMPLES) * Math.PI * 2;
+          xs[i] = squircle(Math.cos(a)) * rx * w;
+          ys[i] = squircle(Math.sin(a)) * ry * h;
+          if (i) lens[i] = lens[i - 1] + Math.hypot(xs[i] - xs[i - 1], ys[i] - ys[i - 1]);
+        }
+        return { xs, ys, lens, total: lens[SAMPLES], ry: ry * h };
+      });
+    };
+
+    // Point at fraction u (0..1) of the path's length.
+    const at = (p: Path, u: number) => {
+      const target = (((u % 1) + 1) % 1) * p.total;
+      let lo = 0;
+      let hi = SAMPLES;
+      while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1;
+        if (p.lens[mid] < target) lo = mid;
+        else hi = mid;
+      }
+      const seg = p.lens[hi] - p.lens[lo] || 1;
+      const k = (target - p.lens[lo]) / seg;
+      return [p.xs[lo] + (p.xs[hi] - p.xs[lo]) * k, p.ys[lo] + (p.ys[hi] - p.ys[lo]) * k];
+    };
+
+    let elapsed = 0;
+    const place = () => {
+      for (const tile of tiles) {
+        const path = paths[tile.ring];
+        const [x, y] = at(path, tile.u + elapsed / rings[tile.ring].period);
+        // lower on screen = "nearer": slightly larger and drawn on top
+        const depth = (y / path.ry + 1) / 2;
+        tile.el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${(0.86 + depth * 0.2).toFixed(3)})`;
+        tile.el.style.zIndex = String(Math.round(depth * 10));
+      }
+    };
+
+    build();
+    new ResizeObserver(() => {
+      build();
+      place();
+    }).observe(panel);
+    place();
+    tiles.forEach((t) => t.el.setAttribute("data-ready", ""));
+
+    if (!reduce) {
+      let visible = true;
+      let raf = 0;
+      let prev = 0;
+      const frame = (now: number) => {
+        // cap the step so a long pause (hidden tab, slow frame) never jumps or speeds up the orbit
+        if (prev) elapsed += Math.min(now - prev, 50) / 1000;
+        prev = now;
+        place();
+        if (visible && !document.hidden) raf = requestAnimationFrame(frame);
+      };
+      const run = () => {
+        cancelAnimationFrame(raf);
+        prev = 0;
+        if (visible && !document.hidden) raf = requestAnimationFrame(frame);
+      };
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        run();
+      }).observe(panel);
+      document.addEventListener("visibilitychange", run);
+    }
+  }
+</script>

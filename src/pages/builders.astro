@@ -1,0 +1,136 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Card from "../components/ui/Card.astro";
+import Button from "../components/ui/Button.astro";
+import CodeWindow from "../components/ui/CodeWindow.astro";
+import PrivacySplit from "../components/sections/PrivacySplit.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { builderResources, builderPrimitives } from "../data/builders";
+
+// A real secret.js query. Messages are encrypted against the contract's code hash,
+// so it is resolved from the chain instead of hardcoded.
+const sample = `
+import { SecretNetworkClient } from "secretjs";
+
+const client = new SecretNetworkClient({
+  url: LCD_URL,
+  chainId: "secret-4",
+});
+
+// Ask the chain for the code hash. A migration changes it.
+const { code_hash } = await client.query.compute.codeHashByContractAddress({
+  contract_address: contractAddress,
+});
+
+// The query is encrypted end to end. Only the enclave can read it.
+const info = await client.query.compute.queryContract({
+  contract_address: contractAddress,
+  code_hash,
+  query: { token_info: {} },
+});
+`;
+---
+
+<PageLayout
+  title="Builders"
+  intro="Smart contracts with encrypted state, private inputs and confidential compute. Written in Rust on CosmWasm."
+  description="Build on Secret Network: documentation, GitHub, grants and developer chat for privacy-preserving smart contracts and confidential VMs."
+>
+  <Fragment slot="actions">
+    <Button href={builderResources[0].href} size="lg">
+      Read the docs
+    </Button>
+    <Button href={builderResources[2].href} size="lg" variant="secondary">
+      Apply for a grant
+    </Button>
+  </Fragment>
+
+  <Section>
+    <div class="grid gap-14 lg:grid-cols-[1fr_1.35fr] lg:gap-16 [&>*]:min-w-0">
+      <div>
+        <SectionHeading title="What you get" class="mb-10" />
+        <ol class="divide-y divide-line border-y border-line">
+          {builderPrimitives.map((p, i) => (
+            <li
+              class="grid grid-cols-[2.5rem_1fr] gap-4 py-7"
+              data-reveal
+              style={`--reveal-i:${i}`}
+            >
+              <span class="tabular pt-0.5 font-mono text-sm text-accent-300">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3 class="type-h3 text-fg">{p.title}</h3>
+                <p class="mt-2 max-w-[48ch] leading-relaxed text-muted">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="lg:sticky lg:top-28 lg:self-start" data-reveal style="--reveal-i:1">
+        <CodeWindow code={sample} filename="query-token.ts" />
+        <p class="mt-4 text-sm text-faint">
+          Querying a private token contract with{" "}
+          <a
+            href="https://github.com/scrtlabs/secret.js"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-muted underline decoration-accent/60 underline-offset-4 hover:text-fg"
+          >
+            secret.js
+          </a>
+          .
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <PrivacySplit
+      eyebrow="Be precise about privacy"
+      title="Know what your users can see"
+      body="Design and document your app around this boundary. Users who assume everything is private are misled by omission."
+      privateItems={[
+        "Contract state",
+        "Execute and query payloads",
+        "Messages between contracts",
+        "SNIP-20 balances and amounts",
+      ]}
+      publicItems={[
+        "Native SCRT transfers",
+        "Which address called which contract, and when",
+        "Staking, delegations and votes",
+        "Fees, gas, code IDs and code hashes",
+      ]}
+    />
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionHeading title="Resources" class="mb-12 md:mb-16" />
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {builderResources.map((r, i) => (
+        <Card href={r.href} class="flex flex-col p-6! md:p-7!" style={`--reveal-i:${i}`}>
+          <span class="inline-flex size-11 items-center justify-center rounded-lg border border-line-strong bg-ink/60 text-accent-300">
+            <Icon name={r.icon} class="size-5" aria-hidden="true" />
+          </span>
+          <h3 class="type-h3 mt-10 text-fg">{r.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{r.description}</p>
+          <span class="mt-auto inline-flex items-center gap-1.5 pt-8 text-sm font-medium text-fg group-hover:text-accent-300">
+            {r.cta}
+            <Icon name="ph:arrow-up-right" class="size-4" aria-hidden="true" />
+          </span>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Questions? <em>Ask the people who build Secret.</em>"
+    body="Core developers and other builders answer in the developer chat."
+    primary={{ label: "Join on Telegram", href: builderResources[3].href }}
+    secondary={{ label: "View source", href: builderResources[1].href }}
+  />
+</PageLayout>

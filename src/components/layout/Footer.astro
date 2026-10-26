@@ -1,0 +1,70 @@
+---
+import { Icon } from "astro-icon/components";
+import Logo from "../ui/Logo.astro";
+import { footerNav, socialLinks, legalLinks, site } from "../../config/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line">
+  <div class="container-page grid gap-12 py-16 md:grid-cols-[1.4fr_repeat(3,1fr)] md:py-20">
+    <div class="max-w-xs">
+      <Logo class="h-7 w-auto text-fg" />
+      <p class="mt-5 text-sm leading-relaxed text-muted">
+        A privacy-first blockchain. Your data stays encrypted, even while apps use it.
+      </p>
+      <ul class="mt-6 flex gap-2" aria-label="Social">
+        {socialLinks.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex size-10 items-center justify-center rounded-pill border border-line text-muted transition-colors hover:border-line-strong hover:text-fg"
+            >
+              <Icon name={s.icon} class="size-[1.125rem]" aria-hidden="true" />
+              <span class="sr-only">{s.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {footerNav.map((group) => (
+      <nav aria-label={group.title}>
+        <h2 class="text-sm font-medium tracking-normal text-fg">{group.title}</h2>
+        <ul class="mt-4 space-y-3">
+          {group.links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                class="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-fg"
+              >
+                {link.label}
+                {link.external && (
+                  <Icon name="ph:arrow-up-right" class="size-3.5" aria-hidden="true" />
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+
+  <div class="container-page flex flex-col gap-3 border-t border-line py-6 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
+    <p>
+      &copy; {year} {site.name}. Nothing on this site is financial advice.
+    </p>
+    <ul class="flex gap-5">
+      {legalLinks.map((l) => (
+        <li>
+          <a href={l.href} class="hover:text-fg">
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</footer>

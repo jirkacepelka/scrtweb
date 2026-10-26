@@ -1,0 +1,55 @@
+---
+/**
+ * Standard inner page, Aero-style:
+ * - a large dark panel: the page name as a big title on the left, a short
+ *   description (and optional CTAs) on the right, an orange glow rising from the bottom;
+ * - the page content starts on a sheet that rises over the lower part of the panel.
+ *
+ * The visible title is always the page's name (`title`), exactly as it appears in the
+ * navigation, so links, buttons and headings match. `heading` is only for pages whose name is
+ * dynamic (e.g. a blog tag).
+ */
+import BaseLayout from "./BaseLayout.astro";
+import ShaderField from "../components/sections/ShaderField.astro";
+import type { SeoProps } from "../components/layout/Seo.astro";
+
+interface Props extends SeoProps {
+  title: string;
+  heading?: string;
+  intro?: string;
+}
+const { heading, intro, ...seo } = Astro.props;
+---
+
+<BaseLayout {...seo}>
+  <section class="px-2 pt-2 sm:px-3 md:px-4">
+    <div class="relative isolate overflow-hidden rounded-[1.75rem] bg-surface-2 md:rounded-[2.25rem]">
+      <ShaderField intensity={0.45} class="opacity-50" />
+      <!-- Glow rising from the bottom edge (Aero-style colour wash, in brand orange) -->
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_95%_at_8%_110%,rgb(255_57_18/0.6),transparent_72%),radial-gradient(50%_80%_at_55%_118%,rgb(255_125_74/0.32),transparent_72%),radial-gradient(45%_85%_at_96%_105%,rgb(224_42_5/0.45),transparent_72%)]"
+        aria-hidden="true"
+      ></div>
+      <div class="relative container-page pt-12 pb-44 md:pt-16 md:pb-56">
+        <div class="grid gap-8 pt-6 md:pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-end lg:gap-16">
+          <h1 class="type-display animate-rise text-fg" set:html={heading ?? seo.title} />
+          <div class="animate-rise [animation-delay:90ms] lg:pb-3">
+            {intro && <p class="max-w-[46ch] leading-relaxed text-fg/80">{intro}</p>}
+            {Astro.slots.has("actions") && (
+              <div class="mt-7 flex flex-wrap gap-3">
+                <slot name="actions" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content sheet, overlapping the bottom of the header panel -->
+  <div class="relative z-10 -mt-32 px-2 sm:px-3 md:-mt-40 md:px-4">
+    <div class="mx-auto max-w-[calc(var(--container-page)+2rem)] rounded-t-[1.75rem] bg-ink shadow-[0_-40px_80px_-50px_rgb(0_0_0/0.9)] md:rounded-t-[2.25rem] [&>section:first-child]:pt-12 md:[&>section:first-child]:pt-16">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

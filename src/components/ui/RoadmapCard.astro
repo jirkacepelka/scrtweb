@@ -1,0 +1,55 @@
+---
+/**
+ * Compact roadmap component card: name, status, readiness. A button that opens the component's
+ * dialog (data-open-dialog, handled in RoadmapTracks.astro). Used in the track grids and as the
+ * "Connects to" cards inside dialogs, so both look the same.
+ */
+import { Icon } from "astro-icon/components";
+import Badge from "./Badge.astro";
+import { statusLabel } from "../../data/roadmap";
+import type { RoadmapItem } from "../../lib/content";
+
+interface Props {
+  item: RoadmapItem;
+  /** Small number before the title (network rollout order). */
+  step?: number;
+}
+const { item, step } = Astro.props;
+const { title, status, readiness } = item.data;
+const tone =
+  status === "built" || status === "live"
+    ? "accent"
+    : status === "in-progress"
+      ? "soon"
+      : "neutral";
+---
+
+<button
+  type="button"
+  data-open-dialog={`dlg-${item.id}`}
+  aria-haspopup="dialog"
+  class="group/card flex h-full w-full flex-col rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-line-strong hover:bg-surface-2"
+>
+  <span class="flex items-start justify-between gap-3">
+    <span class="font-medium text-fg">
+      {step !== undefined && (
+        <span class="tabular mr-1.5 font-mono text-xs text-faint">{step}</span>
+      )}
+      {title}
+    </span>
+    <Icon
+      name="ph:arrows-out-simple"
+      class="mt-0.5 size-4 shrink-0 text-faint transition-colors group-hover/card:text-fg"
+      aria-hidden="true"
+    />
+  </span>
+  <span class="mt-auto flex items-center justify-between gap-2 pt-4">
+    {status ? <Badge tone={tone}>{statusLabel[status]}</Badge> : <span />}
+    {readiness !== undefined && (
+      <span class="tabular font-mono text-xs text-fg">~{readiness}%</span>
+    )}
+  </span>
+  <span class="mt-2 block h-px w-full bg-line" aria-hidden="true">
+    <span class="block h-px bg-accent" style={`width:${readiness ?? 0}%`}></span>
+  </span>
+</button>

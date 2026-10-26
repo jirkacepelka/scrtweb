@@ -1,0 +1,37 @@
+---
+/**
+ * A real code sample in an editor-style frame (file name tab + syntax highlighting via Shiki).
+ * Only for genuine, working snippets. Keep them short (under ~25 lines).
+ */
+import { Code } from "astro:components";
+
+interface Props {
+  code: string;
+  lang?: "ts" | "js" | "rust" | "bash" | "json" | "toml";
+  filename?: string;
+  class?: string;
+}
+const { code, lang = "ts", filename, class: className } = Astro.props;
+---
+
+<figure
+  class:list={[
+    "overflow-hidden rounded-xl border border-line-strong bg-surface shadow-[0_40px_120px_-40px_rgb(255_57_18/0.3)]",
+    className,
+  ]}
+>
+  <figcaption class="flex items-center justify-between border-b border-line px-5 py-3">
+    <span class="font-mono text-xs text-muted">{filename}</span>
+    <span class="font-mono text-xs text-faint uppercase">{lang}</span>
+  </figcaption>
+  <div class="code-window overflow-x-auto p-5 text-[0.8125rem] leading-relaxed md:p-6">
+    <Code code={code.trim()} lang={lang} theme="github-dark-default" />
+  </div>
+</figure>
+
+<style>
+  .code-window :global(pre) {
+    background: transparent !important;
+    font-family: var(--font-mono);
+  }
+</style>

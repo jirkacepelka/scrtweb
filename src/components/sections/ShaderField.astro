@@ -1,0 +1,231 @@
+---
+/**
+ * Animated WebGL background: a regular grid of small dots with a slow orange wave rolling
+ * through it (drifting noise + a ripple from the bottom centre). Fills its positioned parent.
+ * Decorative (aria-hidden).
+ *
+ * The pointer interacts with the wave itself, not just a highlight:
+ * - the wave field bends around the cursor (lens warp) and dots are pushed away from it,
+ * - existing light near the cursor is amplified and rippled; faster movement = stronger effect,
+ * - a click / tap sends a shockwave across the field.
+ *
+ * - No assets, no libraries: one small fragment shader.
+ * - Crisp dots: renders at device resolution (DPR capped at 2). Pauses off-screen / hidden tab.
+ * - prefers-reduced-motion: renders one still frame, no pointer effects.
+ * - No WebGL: the CSS dot pattern on the wrapper stays visible as a fallback.
+ */
+interface Props {
+  class?: string;
+  /** 0..1, how strongly the wave turns dots orange. */
+  intensity?: number;
+  /** Distance between dots in CSS px. */
+  spacing?: number;
+}
+const { class: className, intensity = 1, spacing = 14 } = Astro.props;
+---
+
+<div
+  class:list={[
+    "pointer-events-none absolute inset-0 overflow-hidden bg-ink bg-[radial-gradient(rgb(255_255_255/0.09)_1px,transparent_1.5px)] bg-[size:14px_14px]",
+    className,
+  ]}
+  aria-hidden="true"
+>
+  <canvas
+    data-dotfield
+    data-intensity={intensity}
+    data-spacing={spacing}
+    class="size-full opacity-0 transition-opacity duration-700"
+  ></canvas>
+</div>
+
+<script>
+  const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+
+  const FRAG = `
+precision mediump float;
+uniform vec2 r; uniform float t; uniform float k; uniform float cell; uniform float d;
+uniform vec2 m;     // pointer, 0..1 (y up); off-canvas when < 0
+uniform float e;    // pointer energy 0..1 (speed)
+uniform float pr;   // pointer presence 0..1 (fades in/out on enter/leave)
+uniform vec3 sh;    // shockwave: origin xy, age in seconds
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+void main(){
+  vec2 px=gl_FragCoord.xy;
+  vec2 c=(floor(px/cell)+.5)*cell;
+  vec2 uv=c/r; vec2 A=vec2(r.x/r.y,1.);
+
+  // pointer influence
+  vec2 toM=(uv-m)*A; float dm=length(toM);
+  float infl=m.x<0. ? 0. : exp(-dm*dm*16.)*pr;
+  vec2 dirM=toM/max(dm,1e-4);
+
+  // shockwave ring
+  vec2 toS=(uv-sh.xy)*A; float ds=length(toS);
+  float ring=exp(-pow((ds-sh.z*.8)/.04,2.))*exp(-sh.z*1.4);
+  vec2 dirS=toS/max(ds,1e-4);
+
+  // the wave field, sampled through a lens that bulges away from the pointer
+  vec2 p=(c-.5*r)/r.y;
+  p-=dirM*infl*(.10+.22*e);
+  p-=dirS*ring*.07;
+  float T=t*.07;
+  float field=n(p*1.6+vec2(T,-T*.7))*.65+n(p*3.4-vec2(T*.9,T))*.35;
+  float dist=length((p+.5*vec2(A.x,1.)-vec2(.5*A.x,-.1)));
+  float ripple=.5+.5*sin(dist*8.-t*.55);
+  float base=smoothstep(.5,.9,field*.72+ripple*.38);
+
+  float fade=smoothstep(1.25,.15,length((uv-vec2(.5,.1))*vec2(.9,1.25)));
+  base*=fade;
+
+  // pointer amplifies the light that is already there and sends ripples through it
+  float rings=.5+.5*sin(dm*60.-t*6.);
+  float w=base*(1.+infl*(1.1+1.6*e));
+  w+=infl*rings*(.18+.6*e)*(.3+base);
+  w+=infl*.12;
+  w+=ring*1.1;
+  w=clamp(w,0.,1.);
+
+  // dots are pushed away from the pointer and the shockwave front
+  vec2 off=dirM*infl*(.28+.35*e)*cell+dirS*ring*.4*cell;
+  off=clamp(off,-cell*.42,cell*.42);
+
+  float rad=mix(.75,2.6,w)*d;
+  float a=1.-smoothstep(rad-.8*d,rad,length(px-(c+off)));
+  vec3 grey=vec3(.2+.15*fade);
+  vec3 col=mix(grey,vec3(1.,.22,.07),smoothstep(.12,.65,w)*k);
+  col=mix(col,vec3(1.,.66,.5),smoothstep(.82,1.,w)*k*.7);
+  float alpha=a*mix(.45,1.,w);
+  gl_FragColor=vec4(mix(vec3(.02),col,alpha),1.);
+}`;
+
+  for (const canvas of document.querySelectorAll<HTMLCanvasElement>("[data-dotfield]")) {
+    const gl = canvas.getContext("webgl", { antialias: false });
+    if (!gl) continue;
+
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) continue;
+    gl.useProgram(prog);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, "p");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const u = (name: string) => gl.getUniformLocation(prog, name);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    gl.uniform1f(u("k"), Number(canvas.dataset.intensity ?? 1));
+    gl.uniform1f(u("cell"), Number(canvas.dataset.spacing ?? 14) * dpr);
+    gl.uniform1f(u("d"), dpr);
+
+    const resize = () => {
+      const w = Math.max(1, Math.round(canvas.clientWidth * dpr));
+      const h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+        gl.uniform2f(u("r"), w, h);
+      }
+    };
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Pointer state: smoothed position, energy from speed, shockwave origin + age.
+    let mx = -1,
+      my = -1,
+      tx = -1,
+      ty = -1,
+      presence = 0;
+    let energy = 0,
+      energyTarget = 0,
+      lastMove = 0;
+    let shX = 0.5,
+      shY = 0.5,
+      shAge = 99;
+    const host = canvas.parentElement?.parentElement;
+    const toLocal = (e: PointerEvent) => {
+      const b = canvas.getBoundingClientRect();
+      return [(e.clientX - b.left) / b.width, 1 - (e.clientY - b.top) / b.height];
+    };
+    if (!reduce && host) {
+      host.addEventListener("pointermove", (e) => {
+        const [x, y] = toLocal(e);
+        const now = performance.now();
+        if (tx >= 0 && now - lastMove < 100) {
+          const speed = Math.hypot(x - tx, y - ty) / Math.max(now - lastMove, 1); // per ms
+          energyTarget = Math.min(1, energyTarget + speed * 40);
+        }
+        if (mx < 0) {
+          mx = x;
+          my = y;
+        }
+        tx = x;
+        ty = y;
+        lastMove = now;
+      });
+      host.addEventListener("pointerleave", () => {
+        tx = ty = -1;
+      });
+      host.addEventListener("pointerdown", (e) => {
+        [shX, shY] = toLocal(e);
+        shAge = 0;
+        energyTarget = 1;
+      });
+    }
+
+    const start = performance.now() - 8000;
+    let visible = true;
+    let raf = 0;
+    let prev = performance.now();
+
+    const frame = (now: number) => {
+      const dt = Math.min((now - prev) / 1000, 0.05);
+      prev = now;
+      resize();
+      // pointer left: keep the last position and fade the influence out
+      presence += ((tx < 0 ? 0 : 1) - presence) * 0.08;
+      if (tx >= 0) {
+        mx += (tx - mx) * 0.12;
+        my += (ty - my) * 0.12;
+      }
+      energyTarget *= 0.94;
+      energy += (energyTarget - energy) * 0.12;
+      shAge += dt;
+      gl.uniform2f(u("m"), mx, my);
+      gl.uniform1f(u("e"), energy);
+      gl.uniform1f(u("pr"), presence);
+      gl.uniform3f(u("sh"), shX, shY, shAge);
+      gl.uniform1f(u("t"), (now - start) / 1000);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!reduce && visible && !document.hidden) raf = requestAnimationFrame(frame);
+    };
+    const run = () => {
+      cancelAnimationFrame(raf);
+      prev = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) run();
+    }).observe(canvas);
+    document.addEventListener("visibilitychange", () => !document.hidden && visible && run());
+    new ResizeObserver(() => reduce && run()).observe(canvas);
+
+    run();
+    canvas.classList.remove("opacity-0");
+  }
+</script>

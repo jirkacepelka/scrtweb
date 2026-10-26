@@ -1,0 +1,179 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Button from "../components/ui/Button.astro";
+import StepList from "../components/sections/StepList.astro";
+import StatStrip from "../components/sections/StatStrip.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import BrowserFrame from "../components/ui/BrowserFrame.astro";
+import dashboardStaking from "../assets/screens/dashboard-staking.png";
+import { network, statsAsOf } from "../data/stats";
+import { site } from "../config/site";
+
+const steps = [
+  {
+    title: "Get a wallet and some SCRT",
+    body: "Keplr or Leap work best. Keep a little SCRT unstaked to pay transaction fees.",
+    href: "/wallets",
+    linkLabel: "Choose a wallet",
+  },
+  {
+    title: "Open the Secret Dashboard",
+    body: "Connect your wallet and go to Staking. You will see every active validator with its commission and voting power.",
+    href: `${site.dashboardUrl}`,
+    linkLabel: "Open Dashboard",
+  },
+  {
+    title: "Delegate to a validator",
+    body: "Pick a validator, enter an amount and approve the transaction in your wallet. Your SCRT never leaves your control.",
+  },
+  {
+    title: "Collect rewards",
+    body: "Rewards build up every block. Claim them whenever you like, or restake them so they compound.",
+  },
+];
+
+const stakingStats = [
+  {
+    value: `${network.unbondingDays} days`,
+    label: "Unbonding period",
+    note: "no rewards while unbonding",
+  },
+  {
+    value: `${network.activeValidators}`,
+    label: "Active validators",
+    note: `of ${network.maxValidators} slots`,
+  },
+  {
+    value: `${network.slashDoubleSignPercent}%`,
+    label: "Slash for double signing",
+    note: "of delegated stake",
+  },
+  {
+    value: `${network.slashDowntimePercent}%`,
+    label: "Slash for downtime",
+    note: `plus ${network.downtimeJailMinutes} min jail`,
+  },
+];
+
+const tips = [
+  {
+    icon: "ph:chart-pie-slice",
+    title: "Spread your stake",
+    body: "Delegating outside the biggest validators keeps the network decentralised and limits your exposure to one operator.",
+  },
+  {
+    icon: "ph:percent",
+    title: "Compare commission",
+    body: "Commission is the share of rewards a validator keeps. Very low is not always better if uptime suffers.",
+  },
+  {
+    icon: "ph:pulse",
+    title: "Check uptime",
+    body: "Validators that miss blocks get jailed and stop earning. Look at their track record before delegating.",
+  },
+  {
+    icon: "ph:arrows-clockwise",
+    title: "Redelegate, don't unbond",
+    body: "Unhappy with a validator? Move your stake to another one instantly, without the 21-day wait.",
+  },
+];
+---
+
+<PageLayout
+  title="Staking"
+  intro="Delegate SCRT to a validator, help secure the network and earn a share of the rewards. You keep ownership the whole time."
+  description="How to stake SCRT on Secret Network: step-by-step guide, the 21-day unbonding period, slashing risks and how to choose a validator."
+>
+  <Fragment slot="actions">
+    <Button href={site.dashboardUrl} size="lg">
+      Open Dashboard
+    </Button>
+    <Button href="/blog/how-to-stake-scrt" size="lg" variant="secondary">
+      Read the full guide
+    </Button>
+  </Fragment>
+
+  <Section>
+    <div class="grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:gap-20">
+      <SectionHeading
+        title="How to stake"
+        intro="Four steps, about five minutes. You only need a wallet and some SCRT."
+        class="lg:sticky lg:top-28 lg:self-start"
+      />
+      <StepList steps={steps} layout="stack" />
+    </div>
+  </Section>
+
+  <Section spacing="md" class="pt-0!">
+    <div data-reveal>
+      <BrowserFrame
+        src={dashboardStaking}
+        alt="The Secret Dashboard staking page with the list of active validators, their voting power, commission and staking APR."
+        url="dash.scrt.network/staking"
+      />
+      <p class="mt-4 text-sm text-faint">
+        The staking page in the Secret Dashboard. Figures in the screenshot change over time.
+      </p>
+    </div>
+  </Section>
+
+  <Section spacing="md" class="border-y border-line bg-surface/40">
+    <StatStrip stats={stakingStats} asOf={statsAsOf} />
+  </Section>
+
+  <Section>
+    <SectionHeading
+      title="Choosing a validator"
+      intro="Your validator signs blocks for the stake you delegate. A good one keeps your rewards flowing and your stake safe."
+      class="mb-12"
+    />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {tips.map((t, i) => (
+        <div
+          class="rounded-xl border border-line bg-surface p-6"
+          data-reveal
+          style={`--reveal-i:${i}`}
+        >
+          <Icon name={t.icon} class="size-6 text-accent-300" aria-hidden="true" />
+          <h3 class="mt-6 text-lg font-medium text-fg">{t.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{t.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div
+      class="grid gap-10 rounded-xl border border-line p-8 md:grid-cols-[auto_1fr] md:gap-12 md:p-12"
+      data-reveal
+    >
+      <span class="inline-flex size-14 items-center justify-center rounded-pill bg-accent-900 text-accent-300">
+        <Icon name="ph:check-square-offset" class="size-7" aria-hidden="true" />
+      </span>
+      <div>
+        <h2 class="type-h2 text-fg">Staked SCRT is also your vote</h2>
+        <p class="mt-4 max-w-[62ch] leading-relaxed text-muted">
+          Network upgrades and spending decisions go through on-chain governance. Each proposal is
+          open for
+          {network.votingPeriodDays} days and needs {network.quorumPercent}% of staked SCRT to vote.
+          If you don't vote, your validator votes for you, so check how they vote.
+        </p>
+        <div class="mt-6">
+          <Button href="https://forum.scrt.network" variant="ghost">
+            Join the governance forum
+          </Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Ready to stake?"
+    body="Connect your wallet in the Secret Dashboard and pick a validator."
+    primary={{ label: "Open Dashboard", href: site.dashboardUrl }}
+    secondary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
+  />
+</PageLayout>

@@ -1,0 +1,202 @@
+[
+  {
+    "name": "SecretVM",
+    "slug": "secretvm",
+    "link": "https://secretai.scrtlabs.com/",
+    "description": "Run any workload in SecretVMs and get full privacy guarantees and verifiable execution",
+    "tags": ["dApp", "Tool"],
+    "icon": "/ecosystem/secretvm.webp"
+  },
+  {
+    "name": "Secret AI",
+    "slug": "secret-ai",
+    "link": "https://secretai.scrtlabs.com/",
+    "description": "Decentralized Confidential Computing solution that brings trusted AI to users who value their privacy",
+    "tags": ["dApp", "Tool"],
+    "icon": "/ecosystem/secret-ai.webp"
+  },
+  {
+    "name": "Stashh",
+    "slug": "stashh",
+    "link": "https://stashh.io/",
+    "description": "Mint, buy, and trade the first NFTs with native privacy and access control, known as Secret NFTs.",
+    "tags": ["dApp", "NFTs"],
+    "icon": "/ecosystem/stashh.webp"
+  },
+  {
+    "name": "Zonescan",
+    "slug": "zonescan",
+    "link": "https://zonescan.io/secret/overview",
+    "description": "A block explorer for the Cosmos ecosystem, developed by Cosmonaut Stakes",
+    "tags": ["dApp", "Tool"],
+    "icon": "/ecosystem/zonescan.webp"
+  },
+  {
+    "name": "Shade Protocol",
+    "slug": "shade-protocol",
+    "link": "https://shadeprotocol.io/",
+    "description": "An array of connected privacy-preserving DeFi applications built on Secret Network.",
+    "tags": ["dApp", "DeFi"],
+    "icon": "/ecosystem/shade-protocol.webp"
+  },
+  {
+    "name": "CertUP",
+    "slug": "certup",
+    "link": "https://certup.net/",
+    "description": "Revolutionising official document distribution, verification and publication through Secret NFTs.",
+    "tags": ["dApp", "Data", "NFTs"],
+    "icon": "/ecosystem/certup.webp"
+  },
+  {
+    "name": "PriFi Labs",
+    "slug": "prifi-labs",
+    "link": "https://prifilabs.com/",
+    "description": "PriFi Labs experiments and designs trustless solutions to help businesses and users to have enhanced protection in Web3.",
+    "tags": ["dApp", "Data"],
+    "icon": "/ecosystem/prifi-labs.webp"
+  },
+  {
+    "name": "Secret Bridges",
+    "slug": "secret-bridges",
+    "link": "https://dash.scrt.network/bridge",
+    "description": "Bridge assets from IBC, EVM, and other ecosystems to Secret.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/secret-bridges.webp"
+  },
+  {
+    "name": "AmberDAO",
+    "slug": "amberdao",
+    "link": "https://amberdao.io/",
+    "description": "A community-driven, privacy-preserving store of value token built on Secret Network.",
+    "tags": ["dApp", "DeFi"],
+    "icon": "/ecosystem/amberdao.webp"
+  },
+  {
+    "name": "Secret Tokens",
+    "slug": "secret-tokens",
+    "link": "https://dashboard.scrt.network/wrap",
+    "description": "Wrapping Coins as Secret Tokens immediately supercharges them with private balances and private transfers.",
+    "tags": ["dApp", "Data"],
+    "icon": "/ecosystem/secret-tokens.webp"
+  },
+  {
+    "name": "Secret Dashboard",
+    "slug": "secret-dashboard",
+    "link": "https://dash.scrt.network/",
+    "description": "An interface providing access to essential Secret Network functions and data.",
+    "tags": ["Data"],
+    "icon": "/ecosystem/secret-dashboard.webp"
+  },
+  {
+    "name": "Alter",
+    "slug": "alter",
+    "link": "https://altermail.live/",
+    "description": "A private and secure messaging app that protects your data and identity when communicating online.",
+    "tags": ["dApp", "Communications"],
+    "icon": "/ecosystem/alter.webp"
+  },
+  {
+    "name": "Serenity Shield",
+    "slug": "serenity-shield",
+    "link": "https://serenityshield.io/",
+    "description": "Serenity Shield provides a tool for backing up your seed phrase and other sensitive data, allowing recovery in an emergency event.",
+    "tags": ["dApp", "Data"],
+    "icon": "/ecosystem/serenity-shield.webp"
+  },
+  {
+    "name": "Citadel.one",
+    "slug": "citadel-one",
+    "link": "https://app.citadel.one/login",
+    "description": "Citadel.One’s wallet simplifies staking, shows a transaction history, and other tools to get more out of your crypto.",
+    "tags": ["Wallet"],
+    "icon": "/ecosystem/citadel-one.webp"
+  },
+  {
+    "name": "Keplr Wallet",
+    "slug": "keplr-wallet",
+    "link": "https://wallet.keplr.app/",
+    "description": "The interchain wallet for the Cosmos ecosystem.",
+    "tags": ["Wallet"],
+    "icon": "/ecosystem/keplr-wallet.webp"
+  },
+  {
+    "name": "Leap Wallet",
+    "slug": "leap-wallet",
+    "link": "https://www.leapwallet.io/",
+    "description": "A wallet supporting many Cosmos chains, supporting both desktop and mobile devices.",
+    "tags": ["Wallet"],
+    "icon": "/ecosystem/leap-wallet.webp"
+  },
+  {
+    "name": "Mintscan",
+    "slug": "mintscan",
+    "link": "https://www.mintscan.io/secret",
+    "description": "A block explorer for the Cosmos ecosystem, developed by Cosmostation.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/mintscan.webp"
+  },
+  {
+    "name": "Omniflix inSync",
+    "slug": "omniflix-insync",
+    "link": "https://secret.omniflix.co/",
+    "description": "A staking and governance dashboard.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/omniflix-insync.webp"
+  },
+  {
+    "name": "PageDAO",
+    "slug": "pagedao",
+    "link": "https://pagedao.org/",
+    "description": "Revolutionizing the literary economy with NFT Books.",
+    "tags": [],
+    "icon": "/ecosystem/pagedao.webp"
+  },
+  {
+    "name": "Restake",
+    "slug": "restake",
+    "link": "https://restake.app/",
+    "description": "Auto-compound staking rewards from many different Cosmos chains.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/restake.webp"
+  },
+  {
+    "name": "SNIP-20 Transfer History",
+    "slug": "snip-20-transfer-history",
+    "link": "https://trivium.network/tools",
+    "description": "View the transfer history of secret tokens in your wallet.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/snip-20-transfer-history.webp"
+  },
+  {
+    "name": "Starshell Wallet",
+    "slug": "starshell-wallet",
+    "link": "https://starshell.net/",
+    "description": "A privacy-preserving, free, and open-source Web3 wallet built for Secret Network and the Cosmos ecosystem.",
+    "tags": ["Wallet"],
+    "icon": "/ecosystem/starshell-wallet.webp"
+  },
+  {
+    "name": "Testnet Faucet",
+    "slug": "testnet-faucet",
+    "link": "https://pulsar-3-faucet-wine.vercel.app/",
+    "description": "Get some testnet SCRT for gas fees and start developing on Secret!",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/testnet-faucet.webp"
+  },
+  {
+    "name": "Silent Swap",
+    "slug": "silent-swap",
+    "link": "https://www.silentswap.com/",
+    "description": "Private cross chain swaps",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/silent-swap.webp"
+  },
+  {
+    "name": "Erth Network",
+    "slug": "erth-network",
+    "link": "https://erth.network",
+    "description": "defi protocol that splits profits among verified humans.",
+    "tags": ["Tool"],
+    "icon": "/ecosystem/erth-network.webp"
+  }
+]

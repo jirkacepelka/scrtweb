@@ -1,0 +1,47 @@
+---
+/**
+ * A real product screenshot inside a minimal browser window (traffic lights + address bar).
+ * Use only with genuine screenshots from src/assets/screens/, never mock UI built from divs.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  url?: string;
+  class?: string;
+  eager?: boolean;
+}
+const { src, alt, url, class: className, eager = false } = Astro.props;
+---
+
+<figure
+  class:list={[
+    "overflow-hidden rounded-xl border border-line-strong bg-[#171717] shadow-[0_40px_120px_-30px_rgb(255_57_18/0.35),0_0_0_1px_rgb(255_255_255/0.04)_inset]",
+    className,
+  ]}
+>
+  <div class="flex items-center gap-4 border-b border-line bg-surface px-4 py-3" aria-hidden="true">
+    <div class="flex gap-1.5">
+      <span class="size-2.5 rounded-full bg-fg/15"></span>
+      <span class="size-2.5 rounded-full bg-fg/15"></span>
+      <span class="size-2.5 rounded-full bg-fg/15"></span>
+    </div>
+    {url && (
+      <div class="mx-auto flex h-7 max-w-xs flex-1 items-center justify-center rounded-md bg-ink/70 px-3 font-mono text-xs text-faint">
+        {url}
+      </div>
+    )}
+    <div class="w-10"></div>
+  </div>
+  <Image
+    src={src}
+    alt={alt}
+    widths={[640, 1024, 1600, 2338]}
+    sizes="(min-width: 1280px) 1100px, 92vw"
+    loading={eager ? "eager" : "lazy"}
+    fetchpriority={eager ? "high" : "auto"}
+    class="block h-auto w-full"
+  />
+</figure>

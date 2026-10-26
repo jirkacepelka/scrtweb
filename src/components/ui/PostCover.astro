@@ -1,0 +1,49 @@
+---
+/**
+ * Generated cover for posts without an image. Deterministic per post (seeded by its id),
+ * so every post gets its own composition: glow position, grid density and mark placement vary.
+ * Pure CSS + the logo mark, no image files.
+ */
+import Logo from "./Logo.astro";
+
+interface Props {
+  seed: string;
+  label?: string;
+  class?: string;
+}
+const { seed, label, class: className } = Astro.props;
+
+// Small string hash -> stable pseudo-random numbers in [0, 1).
+let h = 2166136261;
+for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+const rand = (n: number) => (((h >>> (n * 5)) & 0xff) / 255) * 0.999;
+
+const gx = 20 + Math.round(rand(0) * 60);
+const gy = 10 + Math.round(rand(1) * 60);
+const grid = [24, 32, 40][Math.floor(rand(2) * 3)];
+const markRight = rand(3) > 0.5;
+const rotate = Math.round(rand(4) * 30) - 15;
+---
+
+<div
+  class:list={["relative size-full overflow-hidden bg-ink", className]}
+  style={`--gx:${gx}%;--gy:${gy}%;--grid:${grid}px`}
+  aria-hidden="true"
+>
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_var(--gx)_var(--gy),rgb(255_57_18/0.55),rgb(255_57_18/0.12)_35%,transparent_65%)]"></div>
+  <div class="absolute inset-0 [mask-image:radial-gradient(circle_at_var(--gx)_var(--gy),black,transparent_75%)] bg-[linear-gradient(rgb(255_255_255/0.07)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.07)_1px,transparent_1px)] bg-[size:var(--grid)_var(--grid)]"></div>
+  <Logo
+    variant="symbol"
+    decorative
+    class:list={[
+      "absolute top-1/2 h-[140%] w-auto -translate-y-1/2 text-fg/[0.035]",
+      markRight ? "-right-[12%]" : "-left-[12%]",
+    ]}
+    style={`rotate:${rotate}deg`}
+  />
+  {label && (
+    <span class="absolute bottom-4 left-5 font-mono text-xs tracking-tight text-fg/60">
+      {label}
+    </span>
+  )}
+</div>

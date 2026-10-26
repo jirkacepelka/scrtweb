@@ -1,0 +1,63 @@
+---
+/**
+ * Blog listing body shared by /blog and /blog/tags/[tag]: tag filter + post grid + empty state.
+ * On /blog the newest post is shown featured, full width.
+ */
+import PostCard from "./PostCard.astro";
+import Section from "../ui/Section.astro";
+import { tagSlug, type Post } from "../../lib/content";
+
+interface Props {
+  posts: Post[];
+  tags: string[];
+  activeTag?: string;
+}
+const { posts, tags, activeTag } = Astro.props;
+const chip =
+  "inline-flex h-9 items-center rounded-pill border px-4 text-sm transition-colors aria-[current=page]:border-accent/60 aria-[current=page]:bg-accent-900 aria-[current=page]:text-accent-200";
+---
+
+<Section spacing="md">
+  {tags.length > 0 && (
+    <nav aria-label="Filter by topic" class="mb-10">
+      <ul class="flex flex-wrap gap-2">
+        <li>
+          <a
+            href="/blog"
+            aria-current={!activeTag ? "page" : undefined}
+            class:list={[chip, "border-line-strong text-muted hover:text-fg"]}
+          >
+            All
+          </a>
+        </li>
+        {tags.map((t) => (
+          <li>
+            <a
+              href={`/blog/tags/${tagSlug(t)}`}
+              aria-current={activeTag === t ? "page" : undefined}
+              class:list={[chip, "border-line-strong text-muted hover:text-fg"]}
+            >
+              {t}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+
+  {posts.length > 0 ? (
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post, i) => (
+        <PostCard post={post} variant={i === 0 && !activeTag ? "featured" : "card"} index={i % 3} />
+      ))}
+    </div>
+  ) : (
+    <div class="rounded-xl border border-dashed border-line-strong p-12 text-center">
+      <p class="text-lg text-fg">No posts here yet.</p>
+      <p class="mt-2 text-muted">
+        Add a Markdown file to <code class="font-mono text-sm">src/content/blog/</code> to publish
+        one.
+      </p>
+    </div>
+  )}
+</Section>

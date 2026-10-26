@@ -1,0 +1,84 @@
+---
+/**
+ * A sequence of steps. The step's own title is the label (no "Step 1" text).
+ * layout="row": columns divided by hairlines (homepage "get started").
+ * layout="stack": vertical list with a connecting line (how-to guides).
+ */
+import { Icon } from "astro-icon/components";
+
+export interface Step {
+  title: string;
+  body: string;
+  icon?: string;
+  href?: string;
+  linkLabel?: string;
+}
+
+interface Props {
+  steps: Step[];
+  layout?: "row" | "stack";
+}
+const { steps, layout = "row" } = Astro.props;
+---
+
+{layout === "row" ? (
+  <ol class="grid border-t border-line md:grid-cols-3">
+    {steps.map((step, i) => (
+      <li
+        class="group relative flex flex-col border-b border-line py-8 md:border-b-0 md:py-10 md:not-last:border-r md:[&:not(:first-child)]:pl-8 md:[&:not(:last-child)]:pr-8"
+        data-reveal
+        style={`--reveal-i:${i}`}
+      >
+        <div class="flex items-center justify-between">
+          {step.icon && (
+            <span class="inline-flex size-11 items-center justify-center rounded-lg border border-line-strong bg-surface text-accent-300">
+              <Icon name={step.icon} class="size-5" aria-hidden="true" />
+            </span>
+          )}
+          <span class="tabular font-mono text-sm text-faint">{String(i + 1).padStart(2, "0")}</span>
+        </div>
+        <h3 class="type-h3 mt-10 text-fg md:text-2xl">{step.title}</h3>
+        <p class="mt-3 max-w-[38ch] leading-relaxed text-muted">{step.body}</p>
+        {step.href && (
+          <a
+            href={step.href}
+            class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-fg transition-colors hover:text-accent-300 md:mt-auto md:pt-6"
+          >
+            {step.linkLabel ?? "Learn more"}
+            <Icon name="ph:arrow-right" class="size-4" aria-hidden="true" />
+          </a>
+        )}
+      </li>
+    ))}
+  </ol>
+) : (
+  <ol class="relative space-y-10 before:absolute before:top-2 before:bottom-2 before:left-[1.1875rem] before:w-px before:bg-line-strong">
+    {steps.map((step, i) => (
+      <li class="relative grid grid-cols-[2.5rem_1fr] gap-5" data-reveal style={`--reveal-i:${i}`}>
+        <span class="tabular relative z-10 inline-flex size-10 items-center justify-center rounded-pill border border-accent/50 bg-ink font-mono text-sm text-accent-300">
+          {i + 1}
+        </span>
+        <div class="pt-1.5">
+          <h3 class="type-h3 text-fg">{step.title}</h3>
+          <p class="mt-2 max-w-[60ch] leading-relaxed text-muted">{step.body}</p>
+          {step.href && (
+            <a
+              href={step.href}
+              {...(step.href.startsWith("http")
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-fg transition-colors hover:text-accent-300"
+            >
+              {step.linkLabel ?? "Learn more"}
+              <Icon
+                name={step.href.startsWith("http") ? "ph:arrow-up-right" : "ph:arrow-right"}
+                class="size-4"
+                aria-hidden="true"
+              />
+            </a>
+          )}
+        </div>
+      </li>
+    ))}
+  </ol>
+)}

@@ -1,0 +1,48 @@
+---
+/**
+ * Closing call to action. One per page, at the bottom, above the footer.
+ * Same inset-panel + shader language as the homepage hero, at lower intensity.
+ */
+import Button from "../ui/Button.astro";
+import ShaderField from "./ShaderField.astro";
+
+interface Props {
+  title: string;
+  body?: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+const { title, body, primary, secondary } = Astro.props;
+---
+
+<section class="px-2 py-16 sm:px-3 md:px-4 md:py-24">
+  <div
+    class="relative isolate overflow-hidden rounded-[1.75rem] bg-surface-2 md:rounded-[2.25rem]"
+    data-reveal
+  >
+    <ShaderField intensity={0.75} class="opacity-60" />
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_120%,rgb(255_57_18/0.5),transparent_72%),radial-gradient(40%_70%_at_5%_110%,rgb(224_42_5/0.35),transparent_70%),radial-gradient(40%_70%_at_95%_110%,rgb(255_125_74/0.25),transparent_70%)]"
+      aria-hidden="true"
+    ></div>
+    <div class="relative container-page py-20 text-center md:py-32">
+      <h2 class="type-h2 mx-auto max-w-3xl text-fg" set:html={title} />
+      {body && <p class="type-lead mx-auto mt-6 max-w-[44ch] text-fg/70">{body}</p>}
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        <Button href={primary.href} size="lg">
+          {primary.label}
+        </Button>
+        {secondary && (
+          <Button
+            href={secondary.href}
+            size="lg"
+            variant="secondary"
+            class="bg-ink/40 backdrop-blur-md"
+          >
+            {secondary.label}
+          </Button>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

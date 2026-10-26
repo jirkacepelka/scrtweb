@@ -1,0 +1,117 @@
+---
+/**
+ * Blog post teaser. Without a `cover` image, a generated PostCover is used.
+ * variant:
+ *  - "card" (default): compact vertical card for 3-column grids.
+ *  - "featured": horizontal, spans the grid row (newest post on /blog).
+ *  - "row": small thumbnail + title, for "Keep reading" lists.
+ */
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import PostCover from "../ui/PostCover.astro";
+import { formatDate, readingTime, type Post } from "../../lib/content";
+
+interface Props {
+  post: Post;
+  variant?: "card" | "featured" | "row";
+  index?: number;
+}
+const { post, variant = "card", index = 0 } = Astro.props;
+const { title, description, pubDate, tags, cover, coverAlt } = post.data;
+
+const media = {
+  card: "h-40 border-b",
+  featured: "aspect-[16/9] border-b lg:aspect-auto lg:h-full lg:border-r lg:border-b-0",
+  row: "h-20 w-28 shrink-0 rounded-lg border",
+}[variant];
+---
+
+<a
+  href={`/blog/${post.id}`}
+  class:list={[
+    "group overflow-hidden border-line transition-colors duration-300",
+    variant === "row"
+      ? "flex items-center gap-5 rounded-xl border bg-surface/50 p-3 pr-5 hover:border-line-strong hover:bg-surface"
+      : "grid rounded-xl border bg-surface hover:border-line-strong",
+    variant === "card" && "grid-rows-[auto_1fr]",
+    variant === "featured" && "col-span-full lg:grid-cols-[1fr_1.1fr]",
+  ]}
+  data-reveal
+  style={`--reveal-i:${index}`}
+>
+  <div class:list={["relative overflow-hidden border-line", media]}>
+    {cover ? (
+      <Image
+        src={cover}
+        alt={coverAlt ?? ""}
+        widths={variant === "row" ? [240] : [480, 800, 1200]}
+        sizes={
+          variant === "featured"
+            ? "(min-width: 1024px) 45vw, 100vw"
+            : "(min-width: 1024px) 30vw, 100vw"
+        }
+        class="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]"
+      />
+    ) : (
+      <PostCover
+        seed={post.id}
+        label={variant === "row" ? undefined : tags[0]}
+        class="transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]"
+      />
+    )}
+  </div>
+
+  {variant === "row" ? (
+    <div class="min-w-0 flex-1">
+      <p class="text-xs text-faint">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      </p>
+      <h3 class="mt-1 line-clamp-2 font-medium text-fg transition-colors group-hover:text-accent-200">
+        {title}
+      </h3>
+    </div>
+  ) : (
+    <div
+      class:list={[
+        "flex flex-col",
+        variant === "featured" ? "p-7 md:p-9 lg:justify-center" : "p-5",
+      ]}
+    >
+      <div class="flex items-center gap-3 text-xs text-faint">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        <span>{readingTime(post.body)}</span>
+      </div>
+      <h3
+        class:list={[
+          "mt-2 text-fg transition-colors group-hover:text-accent-200",
+          variant === "featured"
+            ? "type-h3 md:text-3xl md:tracking-[-0.03em]"
+            : "text-lg leading-snug font-medium",
+        ]}
+      >
+        {title}
+      </h3>
+      <p
+        class:list={[
+          "mt-2 text-sm leading-relaxed text-muted",
+          variant === "card" ? "line-clamp-2" : "max-w-[46ch] md:text-base",
+        ]}
+      >
+        {description}
+      </p>
+      <span
+        class:list={[
+          "inline-flex items-center gap-2 pt-5 text-sm font-medium text-fg",
+          variant === "card" && "mt-auto",
+        ]}
+      >
+        Read post
+        <Icon
+          name="ph:arrow-right"
+          class="size-4 transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </span>
+    </div>
+  )}
+</a>

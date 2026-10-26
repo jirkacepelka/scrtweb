@@ -1,0 +1,39 @@
+---
+/**
+ * A third-party logo (wallet, exchange…) in a rounded tile, so icons of different
+ * shapes and colours sit consistently. Logos live in public/logos/.
+ */
+interface Props {
+  src: string;
+  /** Empty when the name is printed next to the icon. */
+  alt?: string;
+  size?: "sm" | "md" | "lg";
+  /** Light tile for dark logos (e.g. Ledger). */
+  onLight?: boolean;
+  class?: string;
+}
+const { src, alt = "", size = "md", onLight = false, class: className } = Astro.props;
+const sizes = { sm: "size-5 rounded-[5px]", md: "size-11 rounded-lg", lg: "size-16 rounded-xl" };
+const px = { sm: 20, md: 44, lg: 64 };
+// Fixed inset for light tiles (percent padding would resolve against the parent's width).
+const inset = { sm: "p-[3px]", md: "p-2", lg: "p-3" };
+---
+
+<span
+  class:list={[
+    "inline-flex shrink-0 items-center justify-center overflow-hidden ring-1 ring-line-strong",
+    onLight ? ["bg-fg", inset[size]] : "bg-surface-2",
+    sizes[size],
+    className,
+  ]}
+>
+  <img
+    src={src}
+    alt={alt}
+    width={px[size]}
+    height={px[size]}
+    loading="lazy"
+    decoding="async"
+    class="size-full object-contain"
+  />
+</span>

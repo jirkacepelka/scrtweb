@@ -1,0 +1,25 @@
+---
+/**
+ * Section headline + optional intro, stacked vertically.
+ * `title` accepts <em> for a muted second half ("Stake SCRT. <em>Keep control.</em>").
+ * `eyebrow` is rationed: max one per three sections (see docs/Design System.md).
+ */
+interface Props {
+  title: string;
+  intro?: string;
+  eyebrow?: string;
+  align?: "left" | "center";
+  as?: "h1" | "h2";
+  class?: string;
+}
+const { title, intro, eyebrow, align = "left", as: Tag = "h2", class: className } = Astro.props;
+---
+
+<div class:list={["max-w-3xl", align === "center" && "mx-auto text-center", className]} data-reveal>
+  {eyebrow && <p class="mb-5 font-mono text-sm text-accent-300">{eyebrow}</p>}
+  <Tag class:list={[Tag === "h1" ? "type-h1" : "type-h2", "text-fg"]} set:html={title} />
+  {intro && (
+    <p class:list={["type-lead mt-6 max-w-[56ch]", align === "center" && "mx-auto"]}>{intro}</p>
+  )}
+  <slot />
+</div>

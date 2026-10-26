@@ -1,0 +1,27 @@
+---
+import { render } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
+import { getPosts, type Post } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => {
+    // Related: other posts sharing a tag, newest first, falling back to latest posts.
+    const others = posts.filter((p) => p.id !== post.id);
+    const sharing = others.filter((p) => p.data.tags.some((t) => post.data.tags.includes(t)));
+    const related = [...sharing, ...others.filter((p) => !sharing.includes(p))].slice(0, 2);
+    return { params: { slug: post.id }, props: { post, related } };
+  });
+}
+
+interface Props {
+  post: Post;
+  related: Post[];
+}
+const { post, related } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<PostLayout post={post} related={related} headings={headings}>
+  <Content />
+</PostLayout>

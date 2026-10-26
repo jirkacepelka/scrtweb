@@ -1,0 +1,81 @@
+---
+/**
+ * Bento grid of products / features. Designed for exactly 4 items:
+ *   [ wide (2 cols) ][ tall ]
+ *   [ normal ][ normal ][ tall ]
+ * Each item picks a `visual` so the cells don't all look the same.
+ */
+import { Icon } from "astro-icon/components";
+import Badge from "../ui/Badge.astro";
+
+export interface Feature {
+  title: string;
+  body: string;
+  icon: string;
+  status: "live" | "soon";
+  href?: string;
+  visual?: "glow" | "grid" | "plain";
+}
+
+interface Props {
+  items: [Feature, Feature, Feature, Feature];
+}
+const { items } = Astro.props;
+const placement = [
+  "md:col-span-2",
+  "md:row-span-2 md:col-start-3 md:row-start-1",
+  "md:col-start-1 md:row-start-2",
+  "md:col-start-2 md:row-start-2",
+];
+const visuals = {
+  glow: "bg-[radial-gradient(28rem_18rem_at_100%_0%,rgb(255_57_18/0.28),transparent_70%)] bg-surface",
+  grid: "bg-surface bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:28px_28px]",
+  plain: "bg-surface",
+};
+---
+
+<div class="grid gap-4 md:grid-cols-3 md:grid-rows-[repeat(2,minmax(16rem,auto))]">
+  {items.map((item, i) => {
+    const Tag = item.href ? "a" : "div";
+    const external = item.href?.startsWith("http");
+    return (
+      <Tag
+        href={item.href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        class:list={[
+          "group relative flex flex-col overflow-hidden rounded-xl border border-line p-7 md:p-8",
+          visuals[item.visual ?? "plain"],
+          placement[i],
+          item.href && "transition-colors duration-300 hover:border-line-strong",
+        ]}
+        data-reveal
+        style={`--reveal-i:${i}`}
+      >
+        <div class="flex items-start justify-between gap-4">
+          <span class="inline-flex size-11 items-center justify-center rounded-lg border border-line-strong bg-ink/60 text-accent-300">
+            <Icon name={item.icon} class="size-5" aria-hidden="true" />
+          </span>
+          {item.status === "live" ? (
+            <Badge tone="accent">Live</Badge>
+          ) : (
+            <Badge tone="soon">Coming soon</Badge>
+          )}
+        </div>
+        <div class="mt-auto pt-12">
+          <h3 class="type-h3 text-fg md:text-2xl">{item.title}</h3>
+          <p class="mt-3 max-w-[44ch] leading-relaxed text-muted">{item.body}</p>
+          {item.href && (
+            <span class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-fg transition-colors group-hover:text-accent-300">
+              Learn more
+              <Icon
+                name={external ? "ph:arrow-up-right" : "ph:arrow-right"}
+                class="size-4"
+                aria-hidden="true"
+              />
+            </span>
+          )}
+        </div>
+      </Tag>
+    );
+  })}
+</div>

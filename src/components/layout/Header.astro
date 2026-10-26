@@ -1,0 +1,380 @@
+---
+/**
+ * Site header, Aero-style: a full-width bar with the nav right after the logo and buttons on
+ * the right. A dropdown expands the header into a full-width sheet: "Related" cards on the left
+ * (a featured visual + an optional blog post), large links on the right. The page behind dims
+ * and blurs. All content comes from config/site.ts (navGroups, navLinks, headerActions).
+ *
+ * Desktop (lg+): dropdowns open on hover (fine pointers) or click; close on Escape, outside
+ * click, or when focus leaves. Mobile: a menu button opens a grouped list of every link.
+ */
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import Logo from "../ui/Logo.astro";
+import Button from "../ui/Button.astro";
+import AppIcon from "../ui/AppIcon.astro";
+import PostCover from "../ui/PostCover.astro";
+import { navGroups, navLinks, headerActions, type NavLink } from "../../config/site";
+import { heroApps } from "../../data/ecosystem";
+import { getPosts } from "../../lib/content";
+import dashboardStaking from "../../assets/screens/dashboard-staking.png";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+const ext = (href: string) =>
+  href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {};
+const posts = await getPosts();
+const postById = (id?: string) => posts.find((p) => p.id === id);
+const menuApps = heroApps.slice(0, 12);
+const linkAttrs = (l: NavLink) => ext(l.href);
+---
+
+<header class="sticky top-0 z-40" data-header>
+  <a
+    href="#main"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-4 focus:z-50 focus:rounded-pill focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
+  >
+    Skip to content
+  </a>
+
+  <!-- Dims and blurs the page while a dropdown is open -->
+  <div
+    class="menu-scrim pointer-events-none fixed inset-0 top-16 bg-ink/50 backdrop-blur-md"
+    data-menu-scrim
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="relative border-b border-line bg-ink/85 backdrop-blur-xl transition-colors data-[open]:bg-surface"
+    data-header-bar
+  >
+    <div class="flex h-16 items-center gap-8 px-4 md:px-6">
+      <a href="/" class="shrink-0 text-fg" aria-label="Secret Network home">
+        <Logo class="h-6 w-auto md:h-[1.6rem]" />
+      </a>
+
+      <!-- Desktop navigation, right after the logo -->
+      <nav aria-label="Main" class="hidden lg:block">
+        <ul class="flex items-center gap-1">
+          {navGroups.map((group, gi) => {
+            const active =
+              group.links.some((l) => isActive(l.href)) || isActive(group.featured.href);
+            return (
+              <li data-menu-item>
+                <button
+                  type="button"
+                  class:list={[
+                    "group/trig inline-flex h-9 items-center gap-1.5 rounded-pill px-3.5 text-sm transition-colors hover:text-fg aria-expanded:bg-surface-3 aria-expanded:text-fg",
+                    active ? "text-fg" : "text-muted",
+                  ]}
+                  aria-expanded="false"
+                  aria-controls={`menu-${gi}`}
+                  data-menu-trigger
+                >
+                  {group.label}
+                  <Icon
+                    name="ph:caret-down-fill"
+                    class="size-2.5 transition-transform duration-300 group-aria-expanded/trig:rotate-180"
+                    aria-hidden="true"
+                  />
+                </button>
+
+                <!-- Full-width sheet -->
+                <div
+                  id={`menu-${gi}`}
+                  class="menu-panel absolute inset-x-0 top-full rounded-b-3xl border-b border-line bg-surface"
+                  data-menu-panel
+                >
+                  <div class="grid grid-cols-[1fr_minmax(22rem,30rem)] gap-12 px-6 pt-6 pb-8">
+                    <div>
+                      <p class="flex items-center gap-2 font-mono text-xs text-faint">
+                        <span class="size-1.5 bg-accent" aria-hidden="true" />
+                        Related
+                      </p>
+                      <div class="mt-4 flex gap-4 border-t border-line pt-5">
+                        <a
+                          href={group.featured.href}
+                          {...ext(group.featured.href)}
+                          class="group/card w-72 overflow-hidden rounded-xl bg-ink ring-1 ring-line transition hover:ring-line-strong"
+                        >
+                          <div class="relative h-40 overflow-hidden" aria-hidden="true">
+                            {group.featured.visual === "dashboard" && (
+                              <Image
+                                src={dashboardStaking}
+                                alt=""
+                                widths={[400, 600]}
+                                sizes="288px"
+                                class="size-full object-cover object-left-top transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.04]"
+                              />
+                            )}
+                            {group.featured.visual === "apps" && (
+                              <div class="grid size-full -rotate-6 scale-125 grid-cols-4 place-items-center gap-2.5 bg-surface-2 p-3 transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.32]">
+                                {menuApps.map((a) => (
+                                  <AppIcon src={a.icon} size={46} ring={false} />
+                                ))}
+                              </div>
+                            )}
+                            {group.featured.visual === "code" && <PostCover seed="build-menu" />}
+                          </div>
+                          <div class="p-4">
+                            <p class="font-medium text-fg">{group.featured.title}</p>
+                            <p class="mt-1 text-sm leading-snug text-muted">
+                              {group.featured.description}
+                            </p>
+                          </div>
+                        </a>
+                        {(() => {
+                          const post = postById(group.relatedPost);
+                          return (
+                            post && (
+                              <a
+                                href={`/blog/${post.id}`}
+                                class="group/card w-72 overflow-hidden rounded-xl bg-ink ring-1 ring-line transition hover:ring-line-strong"
+                              >
+                                <div class="h-40 overflow-hidden" aria-hidden="true">
+                                  <PostCover seed={post.id} label={post.data.tags[0]} />
+                                </div>
+                                <div class="p-4">
+                                  <p class="font-medium text-fg">{post.data.title}</p>
+                                  <p class="mt-1 text-sm text-muted">Read on the blog</p>
+                                </div>
+                              </a>
+                            )
+                          );
+                        })()}
+                      </div>
+                    </div>
+
+                    <ul class="self-start border-t border-line">
+                      {group.links.map((link) => (
+                        <li class="border-b border-line">
+                          <a
+                            href={link.href}
+                            {...linkAttrs(link)}
+                            aria-current={isActive(link.href) ? "page" : undefined}
+                            class="group/link flex items-center justify-between gap-6 py-4"
+                          >
+                            <span>
+                              <span class="flex items-center gap-3 text-2xl tracking-tight text-fg transition-colors group-hover/link:text-accent-200">
+                                {isActive(link.href) && (
+                                  <span class="size-2 bg-accent" aria-hidden="true" />
+                                )}
+                                {link.label}
+                              </span>
+                              <span class="mt-1 block text-sm text-muted">{link.description}</span>
+                            </span>
+                            <Icon
+                              name={link.external ? "ph:arrow-up-right" : "ph:arrow-right"}
+                              class="size-5 shrink-0 text-faint transition-all group-hover/link:translate-x-0.5 group-hover/link:text-fg"
+                              aria-hidden="true"
+                            />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+          {navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                {...linkAttrs(link)}
+                aria-current={isActive(link.href) ? "page" : undefined}
+                class="inline-flex h-9 items-center rounded-pill px-3.5 text-sm text-muted transition-colors hover:text-fg aria-[current=page]:text-fg"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-2">
+        <a
+          href={headerActions.secondary.href}
+          {...linkAttrs(headerActions.secondary)}
+          class="hidden h-10 items-center rounded-pill px-4 text-sm font-medium text-fg transition-colors hover:bg-surface-2 md:inline-flex"
+        >
+          {headerActions.secondary.label}
+        </a>
+        <Button href={headerActions.primary.href} size="md" class="max-sm:hidden!">
+          {headerActions.primary.label}
+        </Button>
+        <button
+          type="button"
+          class="inline-flex size-10 items-center justify-center rounded-pill border border-line-strong text-fg lg:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-mobile-toggle
+        >
+          <span class="sr-only" data-mobile-label>
+            Open menu
+          </span>
+          <Icon name="ph:list" class="size-5" aria-hidden="true" data-icon-open />
+          <Icon name="ph:x" class="hidden size-5" aria-hidden="true" data-icon-close />
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div
+      id="mobile-menu"
+      class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line lg:hidden"
+      data-mobile-menu
+    >
+      <nav aria-label="Mobile" class="space-y-7 px-5 py-6">
+        {navGroups.map((group) => {
+          const items = [
+            { label: group.featured.title, href: group.featured.href },
+            ...group.links,
+          ].filter((l, i, all) => all.findIndex((o) => o.href === l.href) === i);
+          return (
+            <div>
+              <p class="font-mono text-xs text-faint">{group.label}</p>
+              <ul class="mt-2">
+                {items.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      {...ext(link.href)}
+                      aria-current={isActive(link.href) ? "page" : undefined}
+                      class="flex items-center justify-between py-2.5 text-lg text-fg aria-[current=page]:text-accent-300"
+                    >
+                      {link.label}
+                      <Icon
+                        name={link.href.startsWith("http") ? "ph:arrow-up-right" : "ph:arrow-right"}
+                        class="size-4 text-faint"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+        <ul class="border-t border-line pt-5">
+          {navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
+                class="flex items-center justify-between py-2.5 text-lg text-fg aria-[current=page]:text-accent-300"
+              >
+                {link.label}
+                <Icon name="ph:arrow-right" class="size-4 text-faint" aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="grid gap-2 sm:grid-cols-2">
+          <Button href={headerActions.secondary.href} size="lg" variant="secondary" class="w-full">
+            {headerActions.secondary.label}
+          </Button>
+          <Button href={headerActions.primary.href} size="lg" class="w-full">
+            {headerActions.primary.label}
+          </Button>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .menu-panel {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.2s;
+  }
+  .menu-panel[data-open] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+  }
+  .menu-scrim {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .menu-scrim[data-open] {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // ---- Desktop mega menu ----
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  const bar = document.querySelector<HTMLElement>("[data-header-bar]");
+  const scrim = document.querySelector<HTMLElement>("[data-menu-scrim]");
+  const items = [...document.querySelectorAll<HTMLElement>("[data-menu-item]")];
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let closeTimer = 0;
+
+  const setOpen = (item: HTMLElement | null) => {
+    for (const it of items) {
+      const open = it === item;
+      it.querySelector("[data-menu-trigger]")?.setAttribute("aria-expanded", String(open));
+      it.querySelector("[data-menu-panel]")?.toggleAttribute("data-open", open);
+    }
+    bar?.toggleAttribute("data-open", !!item);
+    scrim?.toggleAttribute("data-open", !!item);
+  };
+  const openItem = () => items.find((it) => it.querySelector("[data-menu-panel][data-open]"));
+
+  for (const item of items) {
+    const trigger = item.querySelector<HTMLButtonElement>("[data-menu-trigger]")!;
+    trigger.addEventListener("click", () => setOpen(openItem() === item ? null : item));
+    if (canHover) {
+      item.addEventListener("pointerenter", () => {
+        clearTimeout(closeTimer);
+        setOpen(item);
+      });
+      item.addEventListener("pointerleave", () => {
+        closeTimer = window.setTimeout(() => setOpen(null), 180);
+      });
+    }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const it = openItem();
+    if (it) {
+      setOpen(null);
+      it.querySelector<HTMLElement>("[data-menu-trigger]")?.focus();
+    }
+    if (mobileOpen) setMobile(false);
+  });
+  document.addEventListener("click", (e) => {
+    if (!header?.contains(e.target as Node)) setOpen(null);
+  });
+  header?.addEventListener("focusout", (e) => {
+    const next = e.relatedTarget as Node | null;
+    const it = openItem();
+    if (it && next && !it.contains(next)) setOpen(null);
+  });
+
+  // ---- Mobile menu ----
+  const toggle = document.querySelector<HTMLButtonElement>("[data-mobile-toggle]");
+  const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
+  let mobileOpen = false;
+  const setMobile = (open: boolean) => {
+    mobileOpen = open;
+    toggle?.setAttribute("aria-expanded", String(open));
+    menu?.classList.toggle("hidden", !open);
+    toggle?.querySelector("[data-icon-open]")?.classList.toggle("hidden", open);
+    toggle?.querySelector("[data-icon-close]")?.classList.toggle("hidden", !open);
+    const label = toggle?.querySelector("[data-mobile-label]");
+    if (label) label.textContent = open ? "Close menu" : "Open menu";
+  };
+  toggle?.addEventListener("click", () => setMobile(!mobileOpen));
+</script>

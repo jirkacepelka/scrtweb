@@ -1,0 +1,222 @@
+---
+/**
+ * The full Secret 2.0 roadmap as collapsible tracks (Secret Zone, Chain, Networks), closed by
+ * default. Each row shows the track, its component count and average readiness. Inside, each
+ * component is a compact RoadmapCard (name, status, readiness); clicking it opens a dialog with
+ * the description and the components it connects to, shown as the same cards (they open too).
+ *
+ * Deep links: /roadmap#track-chain opens a track, /roadmap#arch-secret-money opens its track
+ * and the component's dialog. Tracks use native <details>, dialogs use native <dialog>.
+ */
+import { Icon } from "astro-icon/components";
+import Badge from "../ui/Badge.astro";
+import RoadmapCard from "../ui/RoadmapCard.astro";
+import { statusLabel } from "../../data/roadmap";
+import type { RoadmapItem } from "../../lib/content";
+
+interface Props {
+  tracks: {
+    id: string;
+    name: string;
+    tagline: string;
+    note?: string;
+    readiness?: number;
+    items: RoadmapItem[];
+  }[];
+  related: Map<string, RoadmapItem[]>;
+  /** Open every track initially. */
+  open?: boolean;
+}
+const { tracks, related, open = false } = Astro.props;
+
+const tone = (status?: string) =>
+  status === "built" || status === "live"
+    ? "accent"
+    : status === "in-progress"
+      ? "soon"
+      : "neutral";
+const trackName = (id: string) => tracks.find((t) => t.id === id)?.name ?? "";
+const allItems = tracks.flatMap((t) => t.items);
+---
+
+<div class="border-b border-line" data-roadmap-tracks>
+  {tracks.map((track) => (
+    <details id={`track-${track.id}`} class="group scroll-mt-28 border-t border-line" open={open}>
+      <summary class="flex cursor-pointer list-none items-center gap-5 py-5 md:gap-8 [&::-webkit-details-marker]:hidden">
+        <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-pill border border-line-strong text-muted transition-colors group-open:border-accent/60 group-open:text-accent-300">
+          <Icon
+            name="ph:caret-down"
+            class="size-4 transition-transform duration-300 group-open:rotate-180"
+            aria-hidden="true"
+          />
+        </span>
+        <span class="min-w-0 flex-1 text-xl tracking-tight text-fg md:text-2xl">
+          {track.name} <span class="text-faint">{track.tagline}</span>
+        </span>
+        <span class="hidden text-sm text-faint sm:block">
+          {track.items.length} {track.items.length === 1 ? "component" : "components"}
+        </span>
+        {track.readiness !== undefined && (
+          <span class="w-20 shrink-0 text-right md:w-28">
+            <span class="tabular font-mono text-sm text-fg">~{track.readiness}%</span>
+            <span class="mt-1.5 block h-px bg-line" aria-hidden="true">
+              <span class="block h-px bg-accent" style={`width:${track.readiness}%`} />
+            </span>
+          </span>
+        )}
+      </summary>
+
+      <div class="pb-8">
+        {track.note && <p class="mb-4 text-sm text-muted md:pl-[3.25rem]">{track.note}</p>}
+        <ul
+          class:list={[
+            "grid gap-2.5",
+            track.id === "networks" ? "sm:grid-cols-3" : "sm:grid-cols-3 lg:grid-cols-5",
+          ]}
+        >
+          {track.items.map((item, i) => (
+            <li id={`arch-${item.id}`} class="relative scroll-mt-28">
+              <RoadmapCard item={item} step={track.id === "networks" ? i + 1 : undefined} />
+              {track.id === "networks" && i < track.items.length - 1 && (
+                <Icon
+                  name="ph:arrow-right"
+                  class="absolute top-1/2 -right-[0.85rem] z-10 hidden size-5 -translate-y-1/2 rounded-pill bg-ink p-0.5 text-accent-300 sm:block"
+                  aria-hidden="true"
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
+  ))}
+</div>
+
+<!-- One dialog per component -->
+{allItems.map((item) => {
+  const links = related.get(item.id) ?? [];
+  return (
+    <dialog
+      id={`dlg-${item.id}`}
+      class="roadmap-dialog m-auto w-[min(46rem,calc(100vw-2rem))] rounded-2xl border border-line-strong bg-surface p-0 text-fg backdrop:bg-ink/70 backdrop:backdrop-blur-sm"
+      aria-labelledby={`dlg-${item.id}-title`}
+      data-arch={item.id}
+    >
+      <div class="p-6 md:p-9">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-mono text-xs text-faint">{trackName(item.data.track)}</p>
+            <h3 id={`dlg-${item.id}-title`} class="type-h2 mt-2 text-fg">
+              {item.data.title}
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-close-dialog
+            class="inline-flex size-9 shrink-0 items-center justify-center rounded-pill border border-line-strong text-muted transition-colors hover:text-fg"
+          >
+            <Icon name="ph:x" class="size-4" aria-hidden="true" />
+            <span class="sr-only">Close</span>
+          </button>
+        </div>
+
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          {item.data.status && (
+            <Badge tone={tone(item.data.status)}>{statusLabel[item.data.status]}</Badge>
+          )}
+          {item.data.readiness !== undefined ? (
+            <span class="flex flex-1 items-center gap-3">
+              <span class="h-px flex-1 bg-line" aria-hidden="true">
+                <span class="block h-px bg-accent" style={`width:${item.data.readiness}%`} />
+              </span>
+              <span class="tabular font-mono text-sm text-fg">~{item.data.readiness}% ready</span>
+            </span>
+          ) : (
+            <span class="text-xs text-faint">No readiness figure published</span>
+          )}
+        </div>
+
+        <p class="mt-6 max-w-[52ch] text-lg leading-relaxed text-muted">{item.data.summary}</p>
+
+        {links.length > 0 && (
+          <div class="mt-8 border-t border-line pt-6">
+            <p class="text-sm text-fg">Connects to</p>
+            <ul class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {links.map((other) => (
+                <li>
+                  <RoadmapCard item={other} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </dialog>
+  );
+})}
+
+<style>
+  .roadmap-dialog[open] {
+    animation: dialog-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+</style>
+
+<script>
+  const dialogs = new Map(
+    [...document.querySelectorAll<HTMLDialogElement>("dialog.roadmap-dialog")].map((d) => [
+      d.id,
+      d,
+    ]),
+  );
+
+  const openDialog = (id: string) => {
+    const next = dialogs.get(id);
+    if (!next) return;
+    for (const d of dialogs.values()) if (d.open && d !== next) d.close();
+    if (!next.open) next.showModal();
+    history.replaceState(null, "", `#arch-${next.dataset.arch}`);
+  };
+
+  document.addEventListener("click", (e) => {
+    const el = e.target as HTMLElement;
+    // any element with data-open-tracks expands every track (e.g. "See every component")
+    if (el.closest("[data-open-tracks]")) {
+      document
+        .querySelectorAll<HTMLDetailsElement>("[data-roadmap-tracks] details")
+        .forEach((d) => (d.open = true));
+    }
+    const opener = el.closest<HTMLElement>("[data-open-dialog]");
+    if (opener) return openDialog(opener.dataset.openDialog!);
+    if (el.closest("[data-close-dialog]")) el.closest("dialog")?.close();
+    // click on the backdrop (the dialog element itself, outside its content box)
+    if (el instanceof HTMLDialogElement && el.open) el.close();
+  });
+
+  for (const d of dialogs.values()) {
+    d.addEventListener("close", () => {
+      if (location.hash === `#arch-${d.dataset.arch}`) {
+        history.replaceState(null, "", location.pathname);
+      }
+    });
+  }
+
+  // Deep links: open the track that contains the target, and the dialog for a component.
+  const openFromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const target = document.getElementById(id);
+    const track = target?.closest<HTMLDetailsElement>("[data-roadmap-tracks] details");
+    if (!target || !track) return;
+    track.open = true;
+    requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+    if (id.startsWith("arch-")) openDialog(`dlg-${id.slice(5)}`);
+  };
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+</script>

@@ -1,0 +1,184 @@
+---
+/**
+ * /scrt: the coin and the network in one compact page.
+ * Facts (from src/data/stats.ts) → what you can do with SCRT → where to get it (#get-scrt).
+ */
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Button from "../components/ui/Button.astro";
+import BrandIcon from "../components/ui/BrandIcon.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { acquirePaths } from "../data/get-scrt";
+import { scrtFacts, statsAsOf, network } from "../data/stats";
+import { formatDate } from "../lib/content";
+import { site, social } from "../config/site";
+
+const uses = [
+  {
+    icon: "ph:wallet",
+    title: "Hold it",
+    body: "Keep SCRT in your own wallet. Keplr and Leap take a minute to set up.",
+    href: "/wallets",
+    label: "Wallets",
+  },
+  {
+    icon: "ph:plant",
+    title: "Stake it",
+    body: `Delegate to a validator to secure the network and earn rewards. Unstaking takes ${network.unbondingDays} days.`,
+    href: "/staking",
+    label: "Staking",
+  },
+  {
+    icon: "ph:check-square-offset",
+    title: "Vote with it",
+    body: `Staked SCRT is a vote on upgrades and spending. Each proposal is open for ${network.votingPeriodDays} days.`,
+    href: social.forum,
+    label: "Governance forum",
+  },
+  {
+    icon: "ph:lock-key",
+    title: "Make it private",
+    body: "Wrap SCRT into sSCRT to hide your balance and transfer amounts in Secret apps.",
+    href: `${site.dashboardUrl}/wrap`,
+    label: "Wrap in Dashboard",
+  },
+];
+---
+
+<PageLayout
+  title="SCRT"
+  intro="The native coin of Secret Network. It pays for transactions, secures the network through staking and gives holders a vote."
+  description="SCRT, the native coin of Secret Network: supply, staking, inflation and network facts, what you can do with it, and where to get it."
+>
+  <Fragment slot="actions">
+    <Button href="#get-scrt" size="lg">
+      Get SCRT
+    </Button>
+    <Button href="/staking" size="lg" variant="secondary">
+      Start staking
+    </Button>
+  </Fragment>
+
+  <!-- Facts: coin + network -->
+  <Section spacing="md">
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-14">
+      {scrtFacts.map((group, gi) => (
+        <div data-reveal style={`--reveal-i:${gi}`}>
+          <h2 class="text-xl font-medium text-fg">{group.title}</h2>
+          <dl class="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
+            {group.items.map((s) => (
+              <div class="bg-surface p-5">
+                <dt class="text-sm text-muted">{s.label}</dt>
+                <dd class="tabular mt-1.5 text-3xl tracking-tight text-fg">{s.value}</dd>
+                {s.note && <dd class="mt-1 font-mono text-xs text-faint">{s.note}</dd>}
+              </div>
+            ))}
+          </dl>
+        </div>
+      ))}
+    </div>
+    <p class="mt-5 text-xs text-faint">
+      Read from Secret Network mainnet ({network.chainId}) on {formatDate(new Date(statsAsOf))}. 1
+      SCRT = 1,000,000 {network.baseDenom}.
+    </p>
+  </Section>
+
+  <!-- What you can do -->
+  <Section spacing="md" class="border-t border-line">
+    <h2 class="text-xl font-medium text-fg" data-reveal>
+      What you can do with SCRT
+    </h2>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {uses.map((u, i) => (
+        <li data-reveal style={`--reveal-i:${i}`}>
+          <a
+            href={u.href}
+            {...(u.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            class="group flex h-full flex-col rounded-xl border border-line bg-surface p-5 transition-colors hover:border-line-strong hover:bg-surface-2"
+          >
+            <Icon name={u.icon} class="size-6 text-accent-300" aria-hidden="true" />
+            <h3 class="mt-5 font-medium text-fg">{u.title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{u.body}</p>
+            <span class="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-medium text-fg group-hover:text-accent-300">
+              {u.label}
+              <Icon
+                name={u.href.startsWith("http") ? "ph:arrow-up-right" : "ph:arrow-right"}
+                class="size-4"
+                aria-hidden="true"
+              />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Get SCRT: compact -->
+  <Section id="get-scrt" spacing="md" class="scroll-mt-20 border-t border-line">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <h2 class="text-xl font-medium text-fg">Get SCRT</h2>
+      <p class="text-sm text-faint">Availability depends on where you live.</p>
+    </div>
+    <ul class="mt-5 grid gap-3 md:grid-cols-2">
+      {acquirePaths.map((path, i) => (
+        <li
+          class="flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row sm:items-center sm:justify-between"
+          data-reveal
+          style={`--reveal-i:${i}`}
+        >
+          <div class="flex items-center gap-4">
+            <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-line-strong bg-ink/60 text-accent-300">
+              <Icon name={path.icon} class="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h3 class="font-medium text-fg">{path.title}</h3>
+              <p class="text-sm text-muted">{path.goodIf}</p>
+            </div>
+          </div>
+          <ul class="flex flex-wrap gap-2">
+            {path.venues.map((v) => (
+              <li>
+                <a
+                  href={v.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group inline-flex h-9 items-center gap-2 rounded-pill border border-line-strong bg-ink/40 py-1 pr-3.5 pl-1 text-sm font-medium text-fg transition-colors hover:border-accent/60"
+                >
+                  {v.logo ? (
+                    <BrandIcon
+                      src={v.logo}
+                      size="sm"
+                      onLight={v.logoOnLight}
+                      class="size-7! rounded-pill!"
+                    />
+                  ) : (
+                    <span class="w-1.5" />
+                  )}
+                  {v.name}
+                  <span class="sr-only">(opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-5 flex max-w-3xl gap-3 text-sm leading-relaxed text-muted" data-reveal>
+      <Icon name="ph:info" class="mt-0.5 size-4 shrink-0 text-faint" aria-hidden="true" />
+      <span>
+        Bought on an exchange? Withdraw SCRT on the{" "}
+        <strong class="font-medium text-fg">Secret network</strong> to your wallet address (it
+        starts with <code class="font-mono text-fg">secret1</code>) and send a small test amount
+        first. To stake or use Secret apps, SCRT needs to be in your own wallet.
+      </span>
+    </p>
+  </Section>
+
+  <CtaBand
+    title="Got SCRT? <em>Put it to work.</em>"
+    body="Stake with a validator to help secure Secret Network and earn rewards."
+    primary={{ label: "Start staking", href: "/staking" }}
+    secondary={{ label: "Explore Ecosystem", href: "/ecosystem" }}
+  />
+</PageLayout>

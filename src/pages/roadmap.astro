@@ -1,0 +1,47 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Button from "../components/ui/Button.astro";
+import RoadmapSummary from "../components/sections/RoadmapSummary.astro";
+import RoadmapTracks from "../components/sections/RoadmapTracks.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { getRoadmap } from "../lib/content";
+import { roadmapIntro } from "../data/roadmap";
+import { social } from "../config/site";
+
+const { tracks, overall, related } = await getRoadmap();
+---
+
+<PageLayout
+  title="Roadmap"
+  intro="Secret 2.0: a public chain that decides who may run, plus confidential programs that do the private work. Here is how far each part is."
+  description="The Secret 2.0 roadmap: readiness of Secret Zone, the chain modules and the Alphanet, Testnet and Mainnet rollout."
+>
+  <Fragment slot="actions">
+    <Button href="#track-zone" size="lg" data-open-tracks>
+      See every component
+    </Button>
+  </Fragment>
+
+  <Section spacing="md">
+    <!-- What Secret 2.0 is, and how far it is: one row -->
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.9fr)] lg:items-start lg:gap-14">
+      <div data-reveal>
+        <h2 class="text-xl font-medium text-fg">{roadmapIntro.title}</h2>
+        <p class="mt-2 text-sm leading-relaxed text-muted">{roadmapIntro.body}</p>
+      </div>
+      <RoadmapSummary overall={overall} tracks={tracks} linkTracks size="sm" />
+    </div>
+
+    <div class="mt-12">
+      <RoadmapTracks tracks={tracks} related={related} />
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Have a say in <em>what comes next.</em>"
+    body="Proposals start on the forum and are decided by SCRT stakers on chain."
+    primary={{ label: "Join the forum", href: social.forum }}
+    secondary={{ label: "Start staking", href: "/staking" }}
+  />
+</PageLayout>

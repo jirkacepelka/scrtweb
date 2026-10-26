@@ -1,0 +1,68 @@
+---
+/**
+ * "What is Secret": plain-language explainer next to an honest private-vs-public breakdown.
+ * Keep the lists accurate. See docs/Content/Privacy claims.md before editing.
+ */
+import { Icon } from "astro-icon/components";
+import Button from "../ui/Button.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  privateItems: string[];
+  publicItems: string[];
+  cta?: { label: string; href: string };
+}
+const { eyebrow, title, body, privateItems, publicItems, cta } = Astro.props;
+---
+
+<div class="grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
+  <div data-reveal>
+    {eyebrow && <p class="mb-4 font-mono text-sm text-accent-300">{eyebrow}</p>}
+    <h2 class="type-h2 text-fg">{title}</h2>
+    <p class="mt-6 max-w-[52ch] text-lg leading-relaxed text-muted">{body}</p>
+    {cta && (
+      <div class="mt-8">
+        <Button href={cta.href} variant="ghost">
+          {cta.label}
+        </Button>
+      </div>
+    )}
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2" data-reveal style="--reveal-i:1">
+    <div class="rounded-xl border border-accent/30 bg-accent-900/50 p-6">
+      <div class="flex items-center gap-2 text-accent-200">
+        <Icon name="ph:lock-simple" class="size-5" aria-hidden="true" />
+        <h3 class="font-medium">Encrypted</h3>
+      </div>
+      <ul class="mt-5 space-y-3">
+        {privateItems.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-fg">
+            <Icon
+              name="ph:check"
+              class="mt-0.5 size-4 shrink-0 text-accent-300"
+              aria-hidden="true"
+            />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="rounded-xl border border-line bg-surface p-6">
+      <div class="flex items-center gap-2 text-muted">
+        <Icon name="ph:eye" class="size-5" aria-hidden="true" />
+        <h3 class="font-medium text-fg">Still public</h3>
+      </div>
+      <ul class="mt-5 space-y-3">
+        {publicItems.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-muted">
+            <Icon name="ph:minus" class="mt-0.5 size-4 shrink-0 text-faint" aria-hidden="true" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</div>

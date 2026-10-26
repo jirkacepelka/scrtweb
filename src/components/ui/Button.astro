@@ -1,0 +1,60 @@
+---
+/**
+ * Button / link-button. Renders <a> when `href` is set, otherwise <button>.
+ * Variants: primary (orange, one per view), secondary (outline), ghost (text + arrow).
+ */
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "md" | "lg";
+  external?: boolean;
+  type?: "button" | "submit";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  external = href?.startsWith("http") ?? false,
+  type = "button",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base =
+  "group inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-[background-color,color,border-color,transform] duration-300 ease-out-expo active:scale-[0.98]";
+
+const sizes = {
+  md: "h-10 px-5 text-sm",
+  lg: "h-12 px-6 text-[0.9375rem]",
+};
+
+const variants = {
+  primary: "rounded-pill bg-accent text-on-accent hover:bg-accent-300",
+  secondary: "rounded-pill border border-line-strong text-fg hover:border-fg/40 hover:bg-surface-2",
+  ghost: "text-fg hover:text-accent-300 px-0! h-auto!",
+};
+
+const classes = [base, sizes[size], variants[variant], className];
+const icon = external ? "ph:arrow-up-right" : "ph:arrow-right";
+const Tag = href ? "a" : "button";
+const linkAttrs = href
+  ? { href, ...(external ? { target: "_blank", rel: "noopener noreferrer" } : {}) }
+  : { type };
+---
+
+<Tag class:list={classes} {...linkAttrs} {...rest}>
+  <slot />
+  {variant !== "secondary" && (
+    <Icon
+      name={icon}
+      aria-hidden="true"
+      class="size-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5"
+    />
+  )}
+  {external && <span class="sr-only">(opens in a new tab)</span>}
+</Tag>

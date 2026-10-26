@@ -1,0 +1,67 @@
+---
+/**
+ * Secret 2.0 readiness at a glance: overall figure plus one per track, each with a thin
+ * progress line, and the date of the figures. Used on /roadmap and as the homepage teaser.
+ * All figures are computed from src/content/roadmap.yaml by getRoadmap().
+ * size="sm": tighter version for sitting next to text on one row (/roadmap).
+ */
+import { formatDate } from "../../lib/content";
+import { roadmapAsOf } from "../../data/roadmap";
+
+interface Props {
+  overall?: number;
+  tracks: { id: string; name: string; tagline: string; readiness?: number }[];
+  /** Link each track figure to its section on /roadmap. */
+  linkTracks?: boolean;
+  size?: "md" | "sm";
+}
+const { overall, tracks, linkTracks = false, size = "md" } = Astro.props;
+const stats = [
+  { id: "overall", name: "Overall", tagline: "Secret 2.0", readiness: overall },
+  ...tracks,
+];
+const sm = size === "sm";
+---
+
+<div>
+  <dl
+    class:list={[
+      "grid grid-cols-2 gap-x-6 lg:grid-cols-4 lg:divide-x lg:divide-line",
+      sm ? "gap-y-6" : "gap-y-8",
+    ]}
+  >
+    {stats.map((s, i) => {
+      const Tag = linkTracks && s.id !== "overall" ? "a" : "div";
+      return (
+        <Tag
+          href={Tag === "a" ? `/roadmap#track-${s.id}` : undefined}
+          class:list={["group block", sm ? "lg:px-5" : "lg:px-8", i === 0 && "lg:pl-0"]}
+          data-reveal
+          style={`--reveal-i:${i}`}
+        >
+          <dt class="text-sm text-muted">
+            {s.name}
+            {!sm && <span class="text-faint"> · {s.tagline}</span>}
+          </dt>
+          <dd
+            class:list={[
+              "tabular mt-1.5 tracking-tight whitespace-nowrap text-fg",
+              sm ? "text-3xl" : "text-4xl md:text-5xl",
+            ]}
+          >
+            {s.readiness !== undefined ? `~${s.readiness}%` : "n/a"}
+          </dd>
+          <dd class:list={["h-px w-full bg-line", sm ? "mt-2.5" : "mt-3"]} aria-hidden="true">
+            <div
+              class:list={["h-px", i === 0 ? "bg-accent" : "bg-accent-300 group-hover:bg-accent"]}
+              style={`width:${s.readiness ?? 0}%`}
+            />
+          </dd>
+        </Tag>
+      );
+    })}
+  </dl>
+  <p class:list={["text-xs text-faint", sm ? "mt-4" : "mt-6"]}>
+    Code readiness estimates as of {formatDate(new Date(roadmapAsOf))}.
+  </p>
+</div>

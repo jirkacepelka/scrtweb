@@ -1,0 +1,24 @@
+# build output
+dist/
+.astro/
+.vercel/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Obsidian: keep shared config, ignore personal workspace state
+docs/.obsidian/workspace*.json
+docs/.obsidian/cache
+docs/.trash/

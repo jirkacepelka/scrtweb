@@ -1,0 +1,20 @@
+---
+/**
+ * Vertical rhythm wrapper for every page section. Use `id` for anchor links.
+ * spacing: "lg" for main sections, "md" for tighter follow-ups.
+ */
+interface Props {
+  id?: string;
+  spacing?: "md" | "lg";
+  class?: string;
+  as?: "section" | "div";
+}
+const { id, spacing = "lg", class: className, as: Tag = "section" } = Astro.props;
+const pad = { md: "py-16 md:py-20", lg: "py-20 md:py-32" };
+---
+
+<Tag id={id} class:list={[pad[spacing], className]}>
+  <div class="container-page">
+    <slot />
+  </div>
+</Tag>

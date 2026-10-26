@@ -1,0 +1,185 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Badge from "../components/ui/Badge.astro";
+import Button from "../components/ui/Button.astro";
+import AppIcon from "../components/ui/AppIcon.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { apps, appCategories, spotlightApps } from "../data/ecosystem";
+
+const registryUrl = "https://github.com/SecretFoundation/DappRegistry";
+const counts = Object.fromEntries(
+  appCategories.map((c) => [c, apps.filter((a) => a.category === c).length]),
+);
+---
+
+<PageLayout
+  title="Ecosystem"
+  intro="Apps running on Secret Network mainnet. Swap, message, store and compute without exposing your data."
+  description="Explore apps built on Secret Network: private DeFi, wallets, confidential AI and privacy tools."
+>
+  <Fragment slot="actions">
+    <Button href="#all-apps" size="lg">
+      Browse all {apps.length} apps
+    </Button>
+    <Button href={registryUrl} size="lg" variant="secondary">
+      List your app
+    </Button>
+  </Fragment>
+
+  <!-- Spotlight -->
+  <Section>
+    <SectionHeading title="Start here" class="mb-12 md:mb-16" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {spotlightApps.map((app, i) => (
+        <a
+          href={app.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group relative flex flex-col overflow-hidden rounded-xl border border-line bg-surface p-7 transition-colors duration-300 hover:border-line-strong hover:bg-surface-2"
+          data-reveal
+          style={`--reveal-i:${i}`}
+        >
+          <div
+            class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-accent/15 blur-3xl transition-opacity duration-500 group-hover:opacity-100 md:opacity-60"
+            aria-hidden="true"
+          ></div>
+          <AppIcon src={app.icon} size={72} class="relative" />
+          <h3 class="type-h3 relative mt-10 text-fg">{app.name}</h3>
+          <p class="relative mt-3 leading-relaxed text-muted">{app.description}</p>
+          <div class="relative mt-auto flex items-center justify-between pt-8">
+            <Badge>{app.category}</Badge>
+            <Icon
+              name="ph:arrow-up-right"
+              class="size-5 text-faint transition-colors group-hover:text-fg"
+              aria-hidden="true"
+            />
+          </div>
+          <span class="sr-only">(opens {app.name} in a new tab)</span>
+        </a>
+      ))}
+    </div>
+  </Section>
+
+  <!-- All apps, filterable -->
+  <Section id="all-apps" class="border-t border-line">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-6 md:mb-12">
+      <SectionHeading title="All apps" />
+      <p class="text-sm text-faint">
+        From the official{" "}
+        <a
+          href={registryUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-muted underline decoration-accent/60 underline-offset-4 hover:text-fg"
+        >
+          Secret dApp registry
+        </a>
+      </p>
+    </div>
+
+    <div
+      role="group"
+      aria-label="Filter by category"
+      class="mb-8 flex flex-wrap gap-2"
+      data-filters
+    >
+      <button type="button" data-filter="all" aria-pressed="true" class="filter-chip">
+        All <span class="tabular text-faint">{apps.length}</span>
+      </button>
+      {appCategories.map((c) => (
+        <button type="button" data-filter={c} aria-pressed="false" class="filter-chip">
+          {c} <span class="tabular text-faint">{counts[c]}</span>
+        </button>
+      ))}
+    </div>
+
+    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {apps.map((app) => (
+        <li data-category={app.category}>
+          <a
+            href={app.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex h-full gap-5 rounded-xl border border-line bg-surface/50 p-6 transition-colors hover:border-line-strong hover:bg-surface"
+          >
+            <AppIcon src={app.icon} size={52} />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-3">
+                <h3 class="truncate font-medium text-fg">{app.name}</h3>
+                <Icon
+                  name="ph:arrow-up-right"
+                  class="size-4 shrink-0 text-faint transition-colors group-hover:text-fg"
+                  aria-hidden="true"
+                />
+              </div>
+              <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted">
+                {app.description}
+              </p>
+              <p class="mt-3 font-mono text-xs text-faint">{app.category}</p>
+            </div>
+            <span class="sr-only">(opens {app.name} in a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="mt-8 flex max-w-3xl gap-3 text-sm leading-relaxed text-faint">
+      <Icon name="ph:info" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+      Apps are built and run by independent teams. A listing is not an endorsement. Check what each
+      app keeps private before you use it.
+    </p>
+  </Section>
+
+  <CtaBand
+    title="Building something private? <em>Get it listed.</em>"
+    body="Add your app to the Secret dApp registry and it appears here and in the Secret Dashboard."
+    primary={{ label: "List your app", href: registryUrl }}
+    secondary={{ label: "Builder resources", href: "/builders" }}
+  />
+</PageLayout>
+
+<style>
+  .filter-chip {
+    display: inline-flex;
+    height: 2.25rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-line-strong);
+    padding-inline: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    transition:
+      color 0.2s,
+      border-color 0.2s,
+      background-color 0.2s;
+    cursor: pointer;
+  }
+  .filter-chip:hover {
+    color: var(--color-fg);
+  }
+  .filter-chip[aria-pressed="true"] {
+    border-color: rgb(255 57 18 / 0.6);
+    background: var(--color-accent-900);
+    color: var(--color-accent-200);
+  }
+</style>
+
+<script>
+  const group = document.querySelector<HTMLElement>("[data-filters]");
+  const items = document.querySelectorAll<HTMLElement>("[data-category]");
+  group?.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-filter]");
+    if (!btn) return;
+    const value = btn.dataset.filter;
+    group
+      .querySelectorAll("[data-filter]")
+      .forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+    items.forEach((li) => {
+      li.hidden = value !== "all" && li.dataset.category !== value;
+    });
+  });
+</script>

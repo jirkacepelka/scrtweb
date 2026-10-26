@@ -1,0 +1,161 @@
+# Secret 2.0 roadmap: one entry per component.
+# Readiness date: roadmapAsOf in src/data/roadmap.ts (update both together).
+# Readiness is a code readiness estimate in percent. Omit it when the source gives none.
+# Fields: id (used as #arch-<id> anchor), track, title, status?, readiness?, summary, connects?.
+# connects: ids of related components. Links work both ways, so list each pair once or twice;
+# an unknown id fails the build.
+# Leave status out when the source gives none (never guess).
+# track:  zone | chain | networks
+# status: built | live | in-progress | planned | later
+# Order in this file = order on the page. See docs/Content/Roadmap items.md.
+
+# ---- Secret Zone: the things you use ----
+- id: edge
+  track: zone
+  title: Edge
+  status: in-progress
+  readiness: 45
+  summary: The only public entry point. It ends HTTPS and forwards each request to the right program.
+  connects: [sites, app]
+
+- id: zone-ui
+  track: zone
+  title: Zone UI
+  status: built
+  readiness: 100
+  summary: One screen to sign in and create a Site, an App or Storage.
+  connects: [accounts, sites, app, encrypted-storage]
+
+- id: accounts
+  track: zone
+  title: Accounts
+  status: in-progress
+  readiness: 60
+  summary: Email and password, browser keys, passkeys, linked wallets and connected repos. Sign in with a Cosmos wallet or a quantum-safe key.
+  connects: [zone-ui]
+
+- id: sites
+  track: zone
+  title: Sites
+  status: in-progress
+  readiness: 65
+  summary: Static sites on your own domain, with a preview for every branch.
+  connects: [edge, builder]
+
+- id: app
+  track: zone
+  title: App
+  status: planned
+  readiness: 0
+  summary: Your own program, running on the approved system image and reached through Edge.
+  connects: [edge, program]
+
+- id: secret-money
+  track: zone
+  title: Secret Money
+  status: in-progress
+  readiness: 99
+  summary: The system program for private balances and transfers of wrapped coins. Post-quantum keys are designed and being coded.
+  connects: [vault, checkpoint]
+
+- id: scheduler
+  track: zone
+  title: Scheduler
+  status: planned
+  readiness: 0
+  summary: Picks up a GitHub push and queues the build.
+  connects: [builder]
+
+- id: builder
+  track: zone
+  title: Builder
+  status: planned
+  readiness: 0
+  summary: Builds your repo on a fresh confidential machine and hands the files to Sites.
+  connects: [scheduler, sites]
+
+- id: key-machines
+  track: zone
+  title: Key machines
+  status: in-progress
+  readiness: 40
+  summary: Kept off the request path. Two separately operated machines must agree before a program gets its keys.
+  connects: [program]
+
+- id: encrypted-storage
+  track: zone
+  title: Encrypted storage
+  summary: Programs encrypt data before it is stored. The store only ever holds ciphertext.
+  connects: [program]
+
+# ---- Chain: the public record ----
+- id: program
+  track: chain
+  title: Program
+  status: in-progress
+  readiness: 80
+  summary: Records each private program's owner, allowed code versions, machines and storage pointer.
+  connects: [host, key-machines, encrypted-storage]
+
+- id: host
+  track: chain
+  title: Host
+  status: in-progress
+  readiness: 82
+  summary: Lists the machine seats that may run programs. A host operator must accept a Zone program.
+  connects: [program, pccs]
+
+- id: vault
+  track: chain
+  title: Vault
+  status: in-progress
+  readiness: 78
+  summary: Holds the coins locked into Secret Money. They only leave after a checkpoint.
+  connects: [secret-money, checkpoint]
+
+- id: checkpoint
+  track: chain
+  title: Checkpoint
+  status: in-progress
+  readiness: 80
+  summary: Keeps Secret Money's latest state and the lease naming the one machine allowed to write.
+  connects: [secret-money, vault]
+
+- id: pccs
+  track: chain
+  title: PCCS
+  status: in-progress
+  readiness: 78
+  summary: Stores signed hardware records so the chain can verify machine proofs.
+  connects: [host, program]
+
+- id: core-modules
+  track: chain
+  title: Bank, staking, governance, IBC
+  status: live
+  summary: The existing modules carry on as they work today.
+
+# ---- Networks: where the upgrade rolls out, in order ----
+- id: alphanet
+  track: networks
+  title: Alphanet
+  status: in-progress
+  readiness: 75
+  summary: The first network for the upgrade. Runs Secret Money and Zone programs side by side.
+  connects: [testnet, secret-money]
+
+- id: testnet
+  track: networks
+  title: Testnet
+  status: in-progress
+  readiness: 35
+  summary: Takes the same upgrade once Alphanet has proven it.
+  connects: [alphanet, mainnet]
+
+- id: mainnet
+  track: networks
+  title: Mainnet
+  status: later
+  readiness: 25
+  summary: The existing Secret Network takes the upgrade after Testnet.
+  connects: [testnet]
