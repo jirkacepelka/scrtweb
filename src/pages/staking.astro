@@ -120,8 +120,10 @@ const tips = [
     </div>
   </Section>
 
-  <Section spacing="md" class="border-y border-line bg-surface/40">
-    <StatStrip stats={stakingStats} asOf={statsAsOf} />
+  <Section spacing="md" class="pt-0!">
+    <div class="rounded-xl border border-line bg-surface p-7 md:p-10" data-reveal>
+      <StatStrip stats={stakingStats} asOf={statsAsOf} />
+    </div>
   </Section>
 
   <Section>
