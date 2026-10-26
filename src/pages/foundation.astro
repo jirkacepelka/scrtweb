@@ -1,0 +1,67 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Card from "../components/ui/Card.astro";
+import Button from "../components/ui/Button.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { foundationRoles, foundationNotes } from "../data/about";
+import { social, links } from "../config/site";
+---
+
+<PageLayout
+  title="Secret Foundation"
+  intro="The Secret Foundation looks after Secret Network on behalf of its community: the chain, the tools people use every day and the work on Secret 2.0."
+  description="The Secret Foundation stewards Secret Network's layer 1: chain maintenance, network tools, grants and the Secret 2.0 design."
+>
+  <Fragment slot="actions">
+    <Button href={social.forum} size="lg">
+      Governance forum
+    </Button>
+    <Button href={`mailto:${links.contactEmail}`} size="lg" variant="secondary">
+      Contact
+    </Button>
+  </Fragment>
+
+  <Section>
+    <SectionHeading title="What the foundation does" class="mb-12 md:mb-16" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {foundationRoles.map((r, i) => (
+        <Card href={r.href} class="flex flex-col p-6!" style={`--reveal-i:${i}`}>
+          <Icon name={r.icon} class="size-6 text-accent-300" aria-hidden="true" />
+          <h3 class="type-h3 mt-10 text-fg">{r.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{r.body}</p>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-20">
+      <SectionHeading
+        title="Recent changes"
+        intro="What the community decided, and what changed as a result."
+      />
+      <ol class="divide-y divide-line border-y border-line">
+        {foundationNotes.map((n, i) => (
+          <li
+            class="grid gap-2 py-6 md:grid-cols-[14rem_1fr] md:gap-8"
+            data-reveal
+            style={`--reveal-i:${i}`}
+          >
+            <h3 class="font-medium text-fg">{n.title}</h3>
+            <p class="leading-relaxed text-muted">{n.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Secret is run in the open. <em>Have your say.</em>"
+    body="Proposals are discussed on the forum and decided on chain by everyone who stakes SCRT."
+    primary={{ label: "Community", href: "/community" }}
+    secondary={{ label: "Roadmap", href: "/roadmap" }}
+  />
+</PageLayout>

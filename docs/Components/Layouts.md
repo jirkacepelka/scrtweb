@@ -38,7 +38,7 @@ For standard inner pages, in the Aero style:
 
 ## PostLayout
 
-Blog post template: back link, title, description, author/date/reading time/tags, optional cover, prose body (`.prose-secret` in `global.css`), then up to two related posts.
+Blog post template, styled like [[#PageLayout]]: a lighter header panel (dot field, orange glow from the bottom) with the back link, title, description and author/date/reading time/tags; then the article on a dark sheet that overlaps the bottom of the panel, so the header and the text read as two separate layers. The sheet holds the optional cover, the prose body (`.prose-secret` in `global.css`) and the sticky "On this page" list. Up to two related posts follow.
 
 ## Seo
 
@@ -58,14 +58,17 @@ Page titles render as "`<title>` \| Secret Network".
 
 Aero-style, full width, sticky. Logo, then the navigation right after it, buttons on the right.
 
-- **Dropdowns** (`navGroups`): opening one expands the header into a full-width sheet with rounded bottom corners. Left: "Related" cards, the group's `featured` card (visual: `dashboard` screenshot, `apps` icon collage or `code` pattern) and, if set, a `relatedPost` from the blog. Right: large links with a one-line description, separated by hairlines; the current page gets an orange square.
-- While a dropdown is open, the page behind dims and blurs (`menu-scrim`).
+- **At the top of the page** the bar is transparent with no bottom line (the homepage hero runs underneath it). Once the page scrolls, it gets a dark blurred background and a hairline (`data-scrolled`, set by an IntersectionObserver on a sentinel at the top of the page).
+
+- **Order:** Use SCRT · Build · (Provide, prepared but hidden) · About, then Blog as a plain link.
+- **Dropdowns** (`navGroups`): opening one expands the header into a full-width sheet. Columns keep fixed widths: the intro (under the logo) and the links sit on the left, the featured card is pushed to the right edge under the header buttons. Three columns from `xl` (two below, without the intro). Moving between dropdowns slides the content sideways while one shared backdrop (`data-menu-backdrop`) changes height: the group name with a one-line `intro`; the links in two columns (small icon tile, label, one-line description, an arrow for external links); and one `featured` card (visual: `dashboard` screenshot, `apps` icon grid or `code` pattern). Small type and quiet hover states on purpose: the earlier version with large links and coloured squares felt too playful.
+- While a dropdown is open, the page behind dims (`menu-scrim`, no blur).
 - Opens on hover (mouse) or click. Closes on Escape (focus returns to the trigger), outside click, or when keyboard focus leaves the sheet.
 - **Plain links** (`navLinks`) follow the dropdowns. **Buttons** (`headerActions`): a quiet text button and the orange primary.
 - Below `lg`: a menu button opens every link, grouped by section.
 
 ## Footer
 
-Logo, short description, social icons, three link columns from `footerNav`, legal row.
+Logo, short description, social icons, one link column per visible nav group (`footerNav`, derived from `navGroups`), legal row.
 
 All header and footer links are edited in `config/site.ts`, see [[Editing data#Navigation, footer and social links]].

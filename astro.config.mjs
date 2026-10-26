@@ -23,6 +23,10 @@ export default defineConfig({
     "/about/get-scrt": "/scrt",
     "/ecosystem/exchanges": "/scrt#get-scrt",
     "/ecosystem/wallets": "/wallets",
+    "/developers/grants": "/grants",
+    "/confidential-computing-layer": "/secret-2",
+    "/media-package": "/brand",
+    "/about/secret-network-foundation": "/foundation",
   },
   vite: {
     plugins: [tailwindcss()],

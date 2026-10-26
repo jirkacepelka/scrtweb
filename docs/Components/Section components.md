@@ -10,7 +10,7 @@ Layout variety matters: on one page, avoid using the same section type twice in 
 
 ## Hero
 
-Homepage only, inspired by getartcraft.com. Full-bleed (edge to edge, no rounded corners), with [[#ShaderField]] (at `intensity={0.6}`) behind a centred `type-display` headline, subtitle and two CTAs.
+Homepage only, inspired by getartcraft.com. Full-bleed (edge to edge, no rounded corners, no bottom line), on a background a touch lighter than the page (`ShaderField base={0.03}`). It extends under the transparent header (`-mt-16 pt-16`); the orbit layer starts below the header so icons never pass behind the nav. [[#ShaderField]] (at `intensity={0.6}`) sits behind a centred `type-display` headline, subtitle and two CTAs.
 
 - **Orbiting app icons:** real icons from the ecosystem travel slowly around the text on two rounded-rectangle paths (superellipses), all in the same direction, one lap every 180 s. Icons are shown as they are: no border, no blur, full opacity. Lower positions are slightly larger and drawn on top, for a hint of depth.
 - **Constant speed:** each path is sampled by arc length, so icons never speed up on the long sides or slow down in corners. Time only advances while the hero is visible, so switching tabs never makes them jump.
@@ -33,7 +33,7 @@ Path sizes, lap time and icon sizes are the `rings` array in `Hero.astro`. Which
 
 ## ShaderField
 
-Animated WebGL background: a regular grid of small dots with a slow orange wave rolling through it (drifting noise plus a ripple from the bottom centre).
+Animated WebGL background: a regular grid of small dots with a slow orange wave rolling through it (drifting noise plus a ripple from the bottom centre). Props: `intensity` (0..1, how orange the wave gets), `spacing` (dot distance in px) and `base` (background grey 0..1, default 0.02 = the page; the hero uses 0.03).
 
 The pointer interacts with the wave itself, not just a highlight:
 
@@ -100,3 +100,21 @@ The full roadmap as collapsible tracks (native `<details>`, closed by default; `
 ## CtaBand
 
 Closing call to action above the footer. **One per page.** Props: `title`, `body?`, `primary`, `secondary?`.
+
+## TabShowcase
+
+A step switcher, used for "Get started" on the homepage and "How it works" on `/secret-2`. Left: a numbered list; the active item expands with its text and a link, and the hairline above it fills in orange while it is shown. Right: one large visual on a dot-grid stage with a single orange light (below `lg` the visual sits under the active item).
+
+- Moves to the next item on its own every `interval` seconds (default 8). Hovering or focusing the block pauses it; the round pause button next to the title stops it. With reduced motion it never advances on its own. It also pauses while off screen.
+- Without JS every item is expanded.
+- Visuals are named slots, one per item:
+
+```astro
+<TabShowcase id="start" title="Get started" items={items}>
+  <Fragment slot="visual-0">
+    <ShowcaseCard title="Wallets" rows={rows} />
+  </Fragment>
+</TabShowcase>
+```
+
+Inspired by the Akash homepage, deliberately not a copy: numbered steps, an orange progress hairline instead of a pill with dots, and the site's own dot grid instead of a gradient.

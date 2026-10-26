@@ -133,3 +133,11 @@ Generated cover for blog posts without an image: an orange glow, grid and the lo
 ## RoadmapCard
 
 Compact roadmap component card: name, status badge, readiness with a thin line, and an expand icon. It is a button that opens the component's dialog (handled by [[Section components#RoadmapTracks]]). Used in the track grids and inside dialogs, so both look the same. Props: `item`, `step?` (number before the title, used for the network rollout).
+
+## ShowcaseCard
+
+A floating panel for [[Section components#TabShowcase]] visuals: a title bar (`title`, `aside?`) and either `rows` (logo, label, meta, tag) or `icons` (a grid of app icons). Always filled from data files (wallets, venues, ecosystem), never invented entries.
+
+## ArchDiagram
+
+The simplified Secret 2.0 architecture (wallet → confidential machines with Secret Money and apps → public chain and encrypted storage). `highlight` (`chain` | `machines` | `money` | `storage`) lights one layer and dims the rest. Used as the visuals of "How it works" on `/secret-2`.

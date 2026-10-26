@@ -15,16 +15,17 @@ This vault explains how the website works and how to maintain it. Open the `docs
 
 ## Everyday tasks
 
-| I want to…                                          | Read                                                 |
-| --------------------------------------------------- | ---------------------------------------------------- |
-| Publish a blog post                                 | [[How to write a blog post]]                         |
-| Add or update an app on /ecosystem                  | [[Ecosystem]]                                        |
-| Add or update a roadmap item                        | [[Roadmap items]]                                    |
-| Add an exchange, wallet, partner or change a figure | [[Editing data]]                                     |
-| Change a nav or footer link                         | [[Editing data#Navigation, footer and social links]] |
-| Write anything about privacy                        | [[Privacy claims]]                                   |
-| Build a new page                                    | [[Adding a page]]                                    |
-| Deploy or change redirects                          | [[Vercel]]                                           |
+| I want to…                                          | Read                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| Publish a blog post                                 | [[How to write a blog post]]                                      |
+| Add or update an app on /ecosystem                  | [[Ecosystem]]                                                     |
+| Add or update a roadmap item                        | [[Roadmap items]]                                                 |
+| Add an exchange, wallet, partner or change a figure | [[Editing data]]                                                  |
+| Change a nav or footer link                         | [[Editing data#Navigation, footer and social links]]              |
+| Write anything about privacy                        | [[Privacy claims]]                                                |
+| Update Secret 2.0, foundation, grants or brand copy | [[Editing data#Secret 2.0 and the move to confidential machines]] |
+| Build a new page                                    | [[Adding a page]]                                                 |
+| Deploy or change redirects                          | [[Vercel]]                                                        |
 
 ## Reference
 

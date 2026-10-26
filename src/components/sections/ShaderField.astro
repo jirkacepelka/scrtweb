@@ -20,8 +20,11 @@ interface Props {
   intensity?: number;
   /** Distance between dots in CSS px. */
   spacing?: number;
+  /** Background grey, 0..1 (0.02 = the page's ink). Raise slightly for a lighter panel. */
+  base?: number;
 }
-const { class: className, intensity = 1, spacing = 14 } = Astro.props;
+const { class: className, intensity = 1, spacing = 14, base = 0.02 } = Astro.props;
+const baseRgb = Math.round(base * 255);
 ---
 
 <div
@@ -29,12 +32,14 @@ const { class: className, intensity = 1, spacing = 14 } = Astro.props;
     "pointer-events-none absolute inset-0 overflow-hidden bg-ink bg-[radial-gradient(rgb(255_255_255/0.09)_1px,transparent_1.5px)] bg-[size:14px_14px]",
     className,
   ]}
+  style={`background-color:rgb(${baseRgb} ${baseRgb} ${baseRgb})`}
   aria-hidden="true"
 >
   <canvas
     data-dotfield
     data-intensity={intensity}
     data-spacing={spacing}
+    data-base={base}
     class="size-full opacity-0 transition-opacity duration-700"
   ></canvas>
 </div>
@@ -49,6 +54,7 @@ uniform vec2 m;     // pointer, 0..1 (y up); off-canvas when < 0
 uniform float e;    // pointer energy 0..1 (speed)
 uniform float pr;   // pointer presence 0..1 (fades in/out on enter/leave)
 uniform vec3 sh;    // shockwave: origin xy, age in seconds
+uniform float bg;   // background grey
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
   return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
@@ -98,7 +104,7 @@ void main(){
   vec3 col=mix(grey,vec3(1.,.22,.07),smoothstep(.12,.65,w)*k);
   col=mix(col,vec3(1.,.66,.5),smoothstep(.82,1.,w)*k*.7);
   float alpha=a*mix(.45,1.,w);
-  gl_FragColor=vec4(mix(vec3(.02),col,alpha),1.);
+  gl_FragColor=vec4(mix(vec3(bg),col,alpha),1.);
 }`;
 
   for (const canvas of document.querySelectorAll<HTMLCanvasElement>("[data-dotfield]")) {
@@ -129,6 +135,7 @@ void main(){
     gl.uniform1f(u("k"), Number(canvas.dataset.intensity ?? 1));
     gl.uniform1f(u("cell"), Number(canvas.dataset.spacing ?? 14) * dpr);
     gl.uniform1f(u("d"), dpr);
+    gl.uniform1f(u("bg"), Number(canvas.dataset.base ?? 0.02));
 
     const resize = () => {
       const w = Math.max(1, Math.round(canvas.clientWidth * dpr));

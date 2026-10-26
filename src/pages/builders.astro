@@ -5,6 +5,7 @@ import Section from "../components/ui/Section.astro";
 import SectionHeading from "../components/ui/SectionHeading.astro";
 import Card from "../components/ui/Card.astro";
 import Button from "../components/ui/Button.astro";
+import Badge from "../components/ui/Badge.astro";
 import CodeWindow from "../components/ui/CodeWindow.astro";
 import PrivacySplit from "../components/sections/PrivacySplit.astro";
 import CtaBand from "../components/sections/CtaBand.astro";
@@ -44,7 +45,7 @@ const info = await client.query.compute.queryContract({
       Read the docs
     </Button>
     <Button href={builderResources[2].href} size="lg" variant="secondary">
-      Apply for a grant
+      Grants
     </Button>
   </Fragment>
 
@@ -88,6 +89,30 @@ const info = await client.query.compute.queryContract({
     </div>
   </Section>
 
+  <Section spacing="md" class="border-t border-line">
+    <div
+      class="flex flex-col gap-6 rounded-xl border border-line bg-surface p-7 md:flex-row md:items-center md:justify-between md:p-8"
+      data-reveal
+    >
+      <div class="max-w-2xl">
+        <p class="flex items-center gap-3">
+          <Badge tone="soon">Draft</Badge>
+          <span class="text-sm text-faint">Coming with Secret 2.0</span>
+        </p>
+        <h2 class="type-h3 mt-4 text-fg">
+          Secret contracts are planned to become confidential programs
+        </h2>
+        <p class="mt-2 leading-relaxed text-muted">
+          Private logic is set to move from contracts on validators to confidential machines. If you
+          start a project now, read what changes before you commit to an architecture.
+        </p>
+      </div>
+      <Button href="/secret-2" variant="secondary">
+        Secret 2.0
+      </Button>
+    </div>
+  </Section>
+
   <Section class="border-t border-line">
     <PrivacySplit
       eyebrow="Be precise about privacy"
@@ -120,7 +145,11 @@ const info = await client.query.compute.queryContract({
           <p class="mt-2 text-sm leading-relaxed text-muted">{r.description}</p>
           <span class="mt-auto inline-flex items-center gap-1.5 pt-8 text-sm font-medium text-fg group-hover:text-accent-300">
             {r.cta}
-            <Icon name="ph:arrow-up-right" class="size-4" aria-hidden="true" />
+            <Icon
+              name={r.href.startsWith("http") ? "ph:arrow-up-right" : "ph:arrow-right"}
+              class="size-4"
+              aria-hidden="true"
+            />
           </span>
         </Card>
       ))}

@@ -1,0 +1,94 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Button from "../components/ui/Button.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { grantAreas, grantProposal } from "../data/about";
+import { links } from "../config/site";
+
+const apply = `mailto:${links.contactEmail}?subject=${encodeURIComponent("Grant proposal")}`;
+---
+
+<PageLayout
+  title="Grants"
+  intro="Funding and support for teams building privacy-preserving apps, infrastructure and tools on Secret Network."
+  description="Secret Network grants: funding for privacy-preserving apps, DeFi, infrastructure, tooling and private integrations. How to apply."
+>
+  <Fragment slot="actions">
+    <Button href={apply} size="lg">
+      Apply by email
+    </Button>
+    <Button href="/builders" size="lg" variant="secondary">
+      Builders
+    </Button>
+  </Fragment>
+
+  <Section>
+    <SectionHeading title="What we fund" class="mb-12 md:mb-16" />
+    <div class="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+      {grantAreas.map((a, i) => (
+        <div class="bg-ink p-6" data-reveal style={`--reveal-i:${i}`}>
+          <Icon name={a.icon} class="size-6 text-accent-300" aria-hidden="true" />
+          <h3 class="mt-8 font-medium text-fg">{a.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{a.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-20">
+      <SectionHeading
+        title="How to apply"
+        intro="Send a short proposal by email. A page or two is enough to start the conversation."
+      >
+        <a
+          href={apply}
+          class="mt-8 inline-flex items-center gap-2 font-mono text-sm text-fg underline decoration-accent/60 underline-offset-4 hover:text-accent-300"
+        >
+          {links.contactEmail}
+        </a>
+      </SectionHeading>
+      <div data-reveal>
+        <p class="text-sm text-faint">A good first email covers</p>
+        <ol class="mt-4 divide-y divide-line border-y border-line">
+          {grantProposal.map((item, i) => (
+            <li class="grid grid-cols-[2.5rem_1fr] gap-4 py-4">
+              <span class="tabular font-mono text-sm text-accent-300">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span class="text-fg">{item}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </Section>
+
+  <Section spacing="md" class="pt-0!">
+    <div
+      class="flex flex-col gap-6 rounded-xl border border-line bg-surface p-7 md:flex-row md:items-center md:justify-between md:p-8"
+      data-reveal
+    >
+      <div class="max-w-2xl">
+        <h2 class="type-h3 text-fg">Planning for Secret 2.0?</h2>
+        <p class="mt-2 leading-relaxed text-muted">
+          Secret contracts are planned to give way to confidential programs. If your app runs on
+          Secret today, mention it in your proposal.
+        </p>
+      </div>
+      <Button href="/secret-2" variant="secondary">
+        Secret 2.0
+      </Button>
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Questions before you apply?"
+    body="Ask core developers and other builders in the developer chat."
+    primary={{ label: "Join the developer chat", href: links.devChat }}
+    secondary={{ label: "Documentation", href: links.docs }}
+  />
+</PageLayout>

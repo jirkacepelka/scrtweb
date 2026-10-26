@@ -1,79 +1,90 @@
 ---
+/**
+ * Homepage: a simple hub. Hero, a "Get started" switcher for the four first steps, one row of
+ * doors into the rest of the site, and the latest news. Detail lives on the inner pages.
+ */
+import { Icon } from "astro-icon/components";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/ui/Section.astro";
 import SectionHeading from "../components/ui/SectionHeading.astro";
 import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import BrowserFrame from "../components/ui/BrowserFrame.astro";
+import ShowcaseCard from "../components/ui/ShowcaseCard.astro";
 import Hero from "../components/sections/Hero.astro";
-import StepList from "../components/sections/StepList.astro";
-import PrivacySplit from "../components/sections/PrivacySplit.astro";
-import StatStrip from "../components/sections/StatStrip.astro";
-import FeatureGrid, { type Feature } from "../components/sections/FeatureGrid.astro";
+import TabShowcase, { type TabItem } from "../components/sections/TabShowcase.astro";
 import PostCard from "../components/sections/PostCard.astro";
-import RoadmapSummary from "../components/sections/RoadmapSummary.astro";
-import CtaBand from "../components/sections/CtaBand.astro";
 import { partners } from "../data/partners";
 import { apps, heroApps } from "../data/ecosystem";
-import { homeStats, statsAsOf } from "../data/stats";
-import { site, legacyPages } from "../config/site";
+import { wallets } from "../data/wallets";
+import { acquirePaths } from "../data/get-scrt";
 import { getPosts, getRoadmap } from "../lib/content";
+import dashboardStaking from "../assets/screens/dashboard-staking.png";
 
 const posts = (await getPosts()).slice(0, 3);
 const roadmap = await getRoadmap();
 
-const steps = [
+const start: TabItem[] = [
   {
-    icon: "ph:wallet",
     title: "Get a wallet",
-    body: "Install Keplr or Leap in a minute. Your wallet holds your SCRT and connects you to apps.",
-    href: "/wallets",
-    linkLabel: "Choose a wallet",
+    body: "Install Keplr or Leap in a minute. Your wallet holds your SCRT, signs transactions and connects you to apps. Only you hold the keys.",
+    cta: { label: "Choose a wallet", href: "/wallets" },
   },
   {
-    icon: "ph:coins",
     title: "Get SCRT",
-    body: "Buy on an exchange, pay with a card or swap tokens you already own.",
-    href: "/scrt#get-scrt",
-    linkLabel: "Ways to buy",
+    body: "Buy on an exchange, pay with a card or swap tokens you already own. Then send it to your wallet.",
+    cta: { label: "Ways to get SCRT", href: "/scrt#get-scrt" },
   },
   {
-    icon: "ph:plant",
     title: "Stake and earn",
-    body: "Delegate to a validator to help secure the network and earn staking rewards.",
-    href: "/staking",
-    linkLabel: "How staking works",
+    body: "Delegate to a validator on the Secret Dashboard. You help secure the network, earn rewards and get a vote in governance.",
+    cta: { label: "How staking works", href: "/staking" },
+  },
+  {
+    title: "Use private apps",
+    body: `Swap, message, store and compute in apps where your data stays encrypted. Browse ${apps.length} apps from the official registry.`,
+    cta: { label: "Explore Ecosystem", href: "/ecosystem" },
   },
 ];
 
-const features: [Feature, Feature, Feature, Feature] = [
+const walletRows = wallets.map((w) => ({
+  logo: w.logo,
+  onLight: w.logoOnLight,
+  label: w.name,
+  meta: w.platforms.join(" · "),
+  tag: w.recommended ? "Recommended" : undefined,
+}));
+
+const venueRows = acquirePaths.flatMap((p) =>
+  p.venues
+    .filter((v) => v.logo)
+    .map((v) => ({ logo: v.logo!, onLight: v.logoOnLight, label: v.name, meta: p.title })),
+);
+
+const doors = [
   {
-    title: "Apps that keep your data private",
-    body: `Swap, message, store and compute in apps where your data stays encrypted. Browse ${apps.length} of them.`,
-    icon: "ph:squares-four",
-    status: "live",
+    title: "Ecosystem",
+    body: "Private DeFi, wallets, AI and tools built on Secret.",
     href: "/ecosystem",
-    visual: "glow",
+    icon: "ph:squares-four",
   },
   {
-    title: "SecretVM",
-    body: "Confidential virtual machines that run whole apps and AI agents with verifiable, attested privacy.",
+    title: "Secret 2.0",
+    body: "Confidential machines and Secret Money. What changes, and when.",
+    href: "/secret-2",
     icon: "ph:cpu",
-    status: "live",
-    href: legacyPages.secretVm,
-    visual: "grid",
   },
   {
-    title: "Private tokens",
-    body: "Wrap SCRT into sSCRT to hide your balance and transfer amounts.",
-    icon: "ph:lock-key",
-    status: "live",
-    href: site.dashboardUrl,
+    title: "Builders",
+    body: "Docs, SDKs, grants and a chat with core developers.",
+    href: "/builders",
+    icon: "ph:code",
   },
   {
-    title: "Secret Bridge",
-    body: "Bring assets from Ethereum and Cosmos chains, and make them private.",
-    icon: "ph:bridge",
-    status: "live",
-    href: "https://dash.scrt.network/bridge",
+    title: "Community",
+    body: "Join the chat, the forum and on-chain governance.",
+    href: "/community",
+    icon: "ph:users-three",
   },
 ];
 ---
@@ -88,79 +99,93 @@ const features: [Feature, Feature, Feature, Feature] = [
     partners={partners}
   />
 
-  <Section spacing="md">
-    <StatStrip stats={homeStats} asOf={statsAsOf} />
+  <Section>
+    <TabShowcase id="start" title="Get started" items={start}>
+      <Fragment slot="visual-0">
+        <ShowcaseCard title="Wallets" aside="Secret supported" rows={walletRows} />
+      </Fragment>
+      <Fragment slot="visual-1">
+        <ShowcaseCard title="Get SCRT" aside="Pick a route" rows={venueRows} />
+      </Fragment>
+      <Fragment slot="visual-2">
+        <BrowserFrame
+          src={dashboardStaking}
+          alt=""
+          url="dash.scrt.network"
+          class="w-full max-w-xl shadow-[0_40px_100px_-30px_rgb(0_0_0/0.9)]!"
+        />
+      </Fragment>
+      <Fragment slot="visual-3">
+        <ShowcaseCard
+          title="Ecosystem"
+          aside={`${apps.length} apps`}
+          icons={heroApps.slice(0, 15).map((a) => a.icon)}
+        />
+      </Fragment>
+    </TabShowcase>
   </Section>
 
   <Section class="border-t border-line">
-    <SectionHeading
-      title="Three steps to your first SCRT. <em>No experience needed.</em>"
-      class="mb-14 max-w-4xl md:mb-20"
-    />
-    <StepList steps={steps} />
-  </Section>
-
-  <Section class="border-t border-line">
-    <PrivacySplit
-      eyebrow="What is Secret Network"
-      title="A blockchain that keeps secrets"
-      body="On most blockchains, every balance and every app interaction is public forever. Secret runs smart contracts inside secure hardware, so the data they handle stays encrypted, even from the people running the network."
-      privateItems={[
-        "Data stored by apps",
-        "What you send to apps, and their replies",
-        "Private token balances and amounts",
-      ]}
-      publicItems={[
-        "Plain SCRT transfers between wallets",
-        "Staking, rewards and governance votes",
-        "Which app an address used, and when",
-      ]}
-      cta={{ label: "Read the full breakdown", href: "/blog/what-is-private-on-secret" }}
-    />
-  </Section>
-
-  <Section class="border-t border-line">
-    <SectionHeading
-      title="SCRT is the start. <em>Here is what is built on it.</em>"
-      class="mb-14 max-w-4xl md:mb-20"
-    />
-    <FeatureGrid items={features} />
-  </Section>
-
-  {posts.length > 0 && (
-    <Section class="border-t border-line">
-      <div class="mb-12 flex flex-wrap items-end justify-between gap-6 md:mb-16">
-        <SectionHeading title="Latest from the blog" />
-        <Button href="/blog" variant="ghost">
-          All posts
-        </Button>
-      </div>
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post, i) => (
-          <PostCard post={post} index={i} />
-        ))}
-      </div>
-    </Section>
-  )}
-
-  <Section class="border-t border-line">
-    <div class="mb-12 flex flex-wrap items-end justify-between gap-6 md:mb-16">
-      <SectionHeading
-        eyebrow="Roadmap"
-        title="Secret 2.0 is coming. <em>Here is how far it is.</em>"
-        class="max-w-4xl"
-      />
-      <Button href="/roadmap" variant="ghost">
-        Roadmap
-      </Button>
+    <SectionHeading title="Explore Secret" class="mb-10 md:mb-14" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {doors.map((d, i) => (
+        <Card href={d.href} class="flex flex-col p-6!" style={`--reveal-i:${i}`}>
+          <span class="inline-flex size-10 items-center justify-center rounded-lg border border-line-strong bg-ink text-fg">
+            <Icon name={d.icon} class="size-5" aria-hidden="true" />
+          </span>
+          <h3 class="type-h3 mt-10 text-fg">{d.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{d.body}</p>
+          <Icon
+            name="ph:arrow-right"
+            class="absolute top-6 right-6 size-5 text-faint transition-all group-hover:translate-x-0.5 group-hover:text-fg"
+            aria-hidden="true"
+          />
+        </Card>
+      ))}
     </div>
-    <RoadmapSummary overall={roadmap.overall} tracks={roadmap.tracks} linkTracks />
   </Section>
 
-  <CtaBand
-    title="Your first SCRT is a few minutes away"
-    body="Pick a wallet, get SCRT and start staking. Everything you need is on the next page."
-    primary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
-    secondary={{ label: "Choose a wallet", href: "/wallets" }}
-  />
+  <Section class="border-t border-line">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-16">
+      {posts.length > 0 && (
+        <div>
+          <div class="mb-8 flex items-end justify-between gap-6">
+            <SectionHeading title="Latest" />
+            <Button href="/blog" variant="ghost">
+              Blog
+            </Button>
+          </div>
+          <div class="grid gap-3">
+            {posts.map((post, i) => (
+              <PostCard post={post} variant="row" index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <a
+        href="/roadmap"
+        class="group flex flex-col rounded-xl border border-line bg-surface p-7 transition-colors hover:border-line-strong lg:mt-[4.5rem]"
+        data-reveal
+      >
+        <p class="text-sm text-muted">Roadmap · Secret 2.0</p>
+        <p class="tabular mt-3 text-6xl tracking-tight text-fg">~{roadmap.overall}%</p>
+        <div class="mt-4 h-px w-full bg-line" aria-hidden="true">
+          <div class="h-px bg-accent" style={`width:${roadmap.overall}%`} />
+        </div>
+        <ul class="mt-6 space-y-2.5 text-sm">
+          {roadmap.tracks.map((t) => (
+            <li class="flex justify-between gap-4">
+              <span class="text-muted">{t.name}</span>
+              <span class="tabular text-fg">~{t.readiness}%</span>
+            </li>
+          ))}
+        </ul>
+        <span class="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-medium text-fg group-hover:text-accent-300">
+          Roadmap
+          <Icon name="ph:arrow-right" class="size-4" aria-hidden="true" />
+        </span>
+      </a>
+    </div>
+  </Section>
 </BaseLayout>

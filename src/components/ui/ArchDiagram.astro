@@ -1,0 +1,61 @@
+---
+/**
+ * Simplified Secret 2.0 architecture: wallet → confidential machines (with Secret Money and
+ * apps) → public chain and encrypted storage. `highlight` lights one layer and dims the rest,
+ * so the same diagram can illustrate each step of the explanation.
+ */
+import type { ArchLayer } from "../../data/secret2";
+
+interface Props {
+  highlight?: ArchLayer;
+  class?: string;
+}
+const { highlight, class: className } = Astro.props;
+const on = (layer: ArchLayer) => !highlight || highlight === layer;
+const box = (layer: ArchLayer) => [
+  "rounded-lg border px-4 py-3 transition-opacity",
+  on(layer) ? "border-accent/50 bg-accent-900/50" : "border-line bg-ink/80 opacity-60",
+];
+const label = "font-mono text-[0.6875rem] text-faint";
+---
+
+<div class:list={["w-full max-w-md space-y-2.5 text-sm", className]}>
+  <div class="mx-auto w-fit rounded-pill border border-line bg-ink/80 px-4 py-1.5 text-muted">
+    Your wallet or browser
+  </div>
+  <div class="mx-auto h-4 w-px bg-line-strong" aria-hidden="true"></div>
+
+  <div
+    class:list={[
+      "rounded-xl border p-3",
+      on("machines") || on("money")
+        ? "border-line-strong bg-surface-2/90"
+        : "border-line bg-ink/80 opacity-60",
+    ]}
+  >
+    <p class={label}>Confidential machines</p>
+    <div class="mt-2 grid grid-cols-3 gap-2">
+      <div class:list={box("money")}>
+        <p class="font-medium text-fg">Secret Money</p>
+      </div>
+      <div class:list={box("machines")}>
+        <p class="font-medium text-fg">Apps</p>
+      </div>
+      <div class:list={box("machines")}>
+        <p class="font-medium text-fg">Keys</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto h-4 w-px bg-line-strong" aria-hidden="true"></div>
+  <div class="grid grid-cols-[1.4fr_1fr] gap-2.5">
+    <div class:list={box("chain")}>
+      <p class={label}>Public chain</p>
+      <p class="mt-1 text-fg">Balances · staking · rules</p>
+    </div>
+    <div class:list={box("storage")}>
+      <p class={label}>Storage</p>
+      <p class="mt-1 text-fg">Encrypted log</p>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 /** Developer resources on the Builders page. */
-import { legacyPages } from "../config/site";
+import { links } from "../config/site";
 
 export interface Resource {
   title: string;
@@ -14,28 +14,28 @@ export const builderResources: Resource[] = [
     title: "Documentation",
     description:
       "Guides for Secret contracts in Rust, secret.js, permits, viewing keys and running a node.",
-    href: "https://docs.scrt.network/secret-network-documentation",
+    href: links.docs,
     icon: "ph:book-open-text",
     cta: "Read the docs",
   },
   {
     title: "GitHub",
     description: "The chain, the SDKs and example contracts. Open source.",
-    href: "https://github.com/Secret3dev/SecretNetwork",
+    href: links.github,
     icon: "ph:github-logo",
     cta: "View source",
   },
   {
     title: "Grants",
     description: "Funding for teams building privacy-preserving apps and infrastructure.",
-    href: legacyPages.grants,
+    href: "/grants",
     icon: "ph:hand-coins",
-    cta: "Apply for a grant",
+    cta: "See grants",
   },
   {
     title: "Developer chat",
     description: "Ask questions and get help from core developers and other builders.",
-    href: "https://t.me/+ASezlJlMwPc2NzE5",
+    href: links.devChat,
     icon: "ph:telegram-logo",
     cta: "Join on Telegram",
   },

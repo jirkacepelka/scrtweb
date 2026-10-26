@@ -17,10 +17,12 @@ Before this site replaces the current scrt.network.
 
 ## Pages that exist only on the old site
 
-`legacyPages` in `src/config/site.ts` links to three old pages. Once this site is on scrt.network those URLs will 404 unless handled:
+`legacyPages` in `src/config/site.ts` now links only to the privacy policy. Once this site is on scrt.network those URLs will 404 unless handled:
 
-- [ ] **Grants** (`/developers/grants/`): build a page, or link to an external grants page
-- [ ] **SecretVM / confidential computing** (`/confidential-computing-layer/`): build a page (fits the planned apps/CVM section), or link to the docs
+- [x] **Grants**: built as `/grants`, redirect from `/developers/grants/` (2026-10-26)
+- [x] **Confidential computing** (`/confidential-computing-layer/`): covered by `/secret-2`, redirect added
+- [x] **Media kit** (`/media-package/`) → `/brand`, **Secret³ Foundation** (`/about/secret-network-foundation/`) → `/foundation`: pages built, redirects added in `astro.config.mjs`
+- [ ] Ask the foundation to confirm the copy on `/foundation`, `/grants` and `/community` (it only restates the old site; no team names or grant sizes were published there)
 - [ ] **Privacy policy** (`/privacy/`): move the legal text to a page here
 - [ ] Decide what to do with the other old URLs (media kit, Secret³ Foundation, builders, blog post URLs) and add redirects in `vercel.json`. See [[Vercel#vercel.json]]
 

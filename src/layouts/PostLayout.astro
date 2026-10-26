@@ -1,8 +1,10 @@
 ---
 /**
- * Blog post page: inset header panel (same language as PageLayout), optional cover,
- * prose body with a sticky "On this page" list built from the post's h2 headings,
- * then related posts.
+ * Blog post page, in the same language as PageLayout: a lighter header panel (dot field and an
+ * orange glow rising from the bottom) with the title and meta, then the article on a dark sheet
+ * that overlaps the bottom of the panel, so header and text read as two clear layers.
+ * The sheet holds the optional cover, the prose and a sticky "On this page" list built from the
+ * post's h2 headings. Related posts follow.
  */
 import type { MarkdownHeading } from "astro";
 import { Image } from "astro:assets";
@@ -33,13 +35,13 @@ const toc = headings.filter((h) => h.depth === 2);
 >
   <article>
     <header class="px-2 pt-2 sm:px-3 md:px-4">
-      <div class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem]">
-        <ShaderField intensity={0.45} class="opacity-80" />
+      <div class="relative isolate overflow-hidden rounded-[1.75rem] bg-surface-2 md:rounded-[2.25rem]">
+        <ShaderField intensity={0.45} class="opacity-50" />
         <div
-          class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/50 to-transparent"
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_95%_at_8%_110%,rgb(255_57_18/0.6),transparent_72%),radial-gradient(50%_80%_at_55%_118%,rgb(255_125_74/0.32),transparent_72%),radial-gradient(45%_85%_at_96%_105%,rgb(224_42_5/0.45),transparent_72%)]"
           aria-hidden="true"
         ></div>
-        <div class="relative container-page pt-12 pb-14 md:pt-20 md:pb-20">
+        <div class="relative container-page pt-12 pb-40 md:pt-16 md:pb-52">
           <a
             href="/blog"
             class="inline-flex items-center gap-2 text-sm text-fg/70 transition-colors hover:text-fg"
@@ -72,42 +74,47 @@ const toc = headings.filter((h) => h.depth === 2);
       </div>
     </header>
 
-    {cover && (
-      <div class="container-page pt-12">
-        <Image
-          src={cover}
-          alt={coverAlt ?? ""}
-          widths={[800, 1200, 1600]}
-          sizes="(min-width: 1216px) 1152px, 100vw"
-          class="w-full rounded-xl border border-line"
-          loading="eager"
-        />
-      </div>
-    )}
+    <!-- Article sheet, overlapping the bottom of the header panel -->
+    <div class="relative z-10 -mt-28 px-2 sm:px-3 md:-mt-36 md:px-4">
+      <div class="mx-auto max-w-[calc(var(--container-page)+2rem)] rounded-t-[1.75rem] bg-ink shadow-[0_-40px_80px_-50px_rgb(0_0_0/0.9)] md:rounded-t-[2.25rem]">
+        {cover && (
+          <div class="container-page pt-10 md:pt-14">
+            <Image
+              src={cover}
+              alt={coverAlt ?? ""}
+              widths={[800, 1200, 1600]}
+              sizes="(min-width: 1216px) 1152px, 100vw"
+              class="w-full rounded-xl border border-line"
+              loading="eager"
+            />
+          </div>
+        )}
 
-    <div class="container-page grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-20">
-      <div class="prose-secret min-w-0">
-        <slot />
+        <div class="container-page grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-20">
+          <div class="prose-secret min-w-0">
+            <slot />
+          </div>
+          {toc.length > 1 && (
+            <aside class="hidden lg:block" aria-label="On this page">
+              <nav class="sticky top-28 border-l border-line pl-5">
+                <p class="text-sm font-medium text-fg">On this page</p>
+                <ul class="mt-4 space-y-3 text-sm">
+                  {toc.map((h) => (
+                    <li>
+                      <a
+                        href={`#${h.slug}`}
+                        class="block leading-snug text-muted transition-colors hover:text-fg"
+                      >
+                        {h.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </aside>
+          )}
+        </div>
       </div>
-      {toc.length > 1 && (
-        <aside class="hidden lg:block" aria-label="On this page">
-          <nav class="sticky top-28 border-l border-line pl-5">
-            <p class="text-sm font-medium text-fg">On this page</p>
-            <ul class="mt-4 space-y-3 text-sm">
-              {toc.map((h) => (
-                <li>
-                  <a
-                    href={`#${h.slug}`}
-                    class="block leading-snug text-muted transition-colors hover:text-fg"
-                  >
-                    {h.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
-      )}
     </div>
   </article>
 

@@ -1,9 +1,10 @@
 ---
 /**
  * Site header, Aero-style: a full-width bar with the nav right after the logo and buttons on
- * the right. A dropdown expands the header into a full-width sheet: "Related" cards on the left
- * (a featured visual + an optional blog post), large links on the right. The page behind dims
- * and blurs. All content comes from config/site.ts (navGroups, navLinks, headerActions).
+ * the right. A dropdown expands the header into a full-width sheet: the group name and a line of
+ * intro, the links (icon tile, label, one-line description) in two columns, and one featured
+ * card. The page behind dims. All content comes from config/site.ts (navGroups, navLinks,
+ * headerActions).
  *
  * Desktop (lg+): dropdowns open on hover (fine pointers) or click; close on Escape, outside
  * click, or when focus leaves. Mobile: a menu button opens a grouped list of every link.
@@ -16,18 +17,22 @@ import AppIcon from "../ui/AppIcon.astro";
 import PostCover from "../ui/PostCover.astro";
 import { navGroups, navLinks, headerActions, type NavLink } from "../../config/site";
 import { heroApps } from "../../data/ecosystem";
-import { getPosts } from "../../lib/content";
 import dashboardStaking from "../../assets/screens/dashboard-staking.png";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 const ext = (href: string) =>
   href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {};
-const posts = await getPosts();
-const postById = (id?: string) => posts.find((p) => p.id === id);
-const menuApps = heroApps.slice(0, 12);
+const menuApps = heroApps.slice(0, 18);
 const linkAttrs = (l: NavLink) => ext(l.href);
 ---
+
+<!-- Marks the top of the page: while it is visible the bar has no background or bottom line -->
+<div
+  class="pointer-events-none absolute top-0 left-0 h-px w-px"
+  data-top-sentinel
+  aria-hidden="true"
+></div>
 
 <header class="sticky top-0 z-40" data-header>
   <a
@@ -39,15 +44,22 @@ const linkAttrs = (l: NavLink) => ext(l.href);
 
   <!-- Dims and blurs the page while a dropdown is open -->
   <div
-    class="menu-scrim pointer-events-none fixed inset-0 top-16 bg-ink/50 backdrop-blur-md"
+    class="menu-scrim pointer-events-none fixed inset-0 top-16 bg-ink/60"
     data-menu-scrim
     aria-hidden="true"
   ></div>
 
   <div
-    class="relative border-b border-line bg-ink/85 backdrop-blur-xl transition-colors data-[open]:bg-surface"
+    class="relative border-b border-transparent transition-colors duration-300 data-[open]:bg-surface data-[scrolled]:border-line data-[scrolled]:bg-ink/85 data-[scrolled]:backdrop-blur-xl data-[scrolled]:data-[open]:bg-surface"
     data-header-bar
   >
+    <!-- One shared sheet behind every dropdown. Its height follows the open panel, so moving
+         between dropdowns resizes it smoothly instead of closing one and opening the next. -->
+    <div
+      class="menu-backdrop pointer-events-none absolute inset-x-0 top-full hidden rounded-b-3xl border-b border-line bg-surface shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] lg:block"
+      data-menu-backdrop
+      aria-hidden="true"
+    ></div>
     <div class="flex h-16 items-center gap-8 px-4 md:px-6">
       <a href="/" class="shrink-0 text-fg" aria-label="Secret Network home">
         <Logo class="h-6 w-auto md:h-[1.6rem]" />
@@ -79,99 +91,97 @@ const linkAttrs = (l: NavLink) => ext(l.href);
                   />
                 </button>
 
-                <!-- Full-width sheet -->
+                <!-- Full-width sheet: group intro · links with icon tiles · one featured card -->
                 <div
                   id={`menu-${gi}`}
-                  class="menu-panel absolute inset-x-0 top-full rounded-b-3xl border-b border-line bg-surface"
+                  class="menu-panel absolute inset-x-0 top-full"
                   data-menu-panel
                 >
-                  <div class="grid grid-cols-[1fr_minmax(22rem,30rem)] gap-12 px-6 pt-6 pb-8">
-                    <div>
-                      <p class="flex items-center gap-2 font-mono text-xs text-faint">
-                        <span class="size-1.5 bg-accent" aria-hidden="true" />
-                        Related
-                      </p>
-                      <div class="mt-4 flex gap-4 border-t border-line pt-5">
-                        <a
-                          href={group.featured.href}
-                          {...ext(group.featured.href)}
-                          class="group/card w-72 overflow-hidden rounded-xl bg-ink ring-1 ring-line transition hover:ring-line-strong"
-                        >
-                          <div class="relative h-40 overflow-hidden" aria-hidden="true">
-                            {group.featured.visual === "dashboard" && (
-                              <Image
-                                src={dashboardStaking}
-                                alt=""
-                                widths={[400, 600]}
-                                sizes="288px"
-                                class="size-full object-cover object-left-top transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.04]"
-                              />
-                            )}
-                            {group.featured.visual === "apps" && (
-                              <div class="grid size-full -rotate-6 scale-125 grid-cols-4 place-items-center gap-2.5 bg-surface-2 p-3 transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.32]">
-                                {menuApps.map((a) => (
-                                  <AppIcon src={a.icon} size={46} ring={false} />
-                                ))}
-                              </div>
-                            )}
-                            {group.featured.visual === "code" && <PostCover seed="build-menu" />}
-                          </div>
-                          <div class="p-4">
-                            <p class="font-medium text-fg">{group.featured.title}</p>
-                            <p class="mt-1 text-sm leading-snug text-muted">
-                              {group.featured.description}
-                            </p>
-                          </div>
-                        </a>
-                        {(() => {
-                          const post = postById(group.relatedPost);
-                          return (
-                            post && (
-                              <a
-                                href={`/blog/${post.id}`}
-                                class="group/card w-72 overflow-hidden rounded-xl bg-ink ring-1 ring-line transition hover:ring-line-strong"
-                              >
-                                <div class="h-40 overflow-hidden" aria-hidden="true">
-                                  <PostCover seed={post.id} label={post.data.tags[0]} />
-                                </div>
-                                <div class="p-4">
-                                  <p class="font-medium text-fg">{post.data.title}</p>
-                                  <p class="mt-1 text-sm text-muted">Read on the blog</p>
-                                </div>
-                              </a>
-                            )
-                          );
-                        })()}
-                      </div>
+                  <div class="grid grid-cols-[34rem_minmax(0,1fr)] gap-10 px-4 py-8 md:px-6 xl:grid-cols-[14rem_36rem_minmax(0,1fr)] xl:gap-12">
+                    <div class="hidden xl:block">
+                      <p class="text-sm font-medium text-fg">{group.label}</p>
+                      <p class="mt-2 text-sm leading-relaxed text-faint">{group.intro}</p>
                     </div>
 
-                    <ul class="self-start border-t border-line">
+                    <ul class="grid grid-cols-2 content-start gap-x-6 gap-y-1">
                       {group.links.map((link) => (
-                        <li class="border-b border-line">
+                        <li>
                           <a
                             href={link.href}
                             {...linkAttrs(link)}
                             aria-current={isActive(link.href) ? "page" : undefined}
-                            class="group/link flex items-center justify-between gap-6 py-4"
+                            class="group/link flex items-start gap-3.5 rounded-lg p-3 transition-colors hover:bg-surface-2 aria-[current=page]:bg-surface-2"
                           >
-                            <span>
-                              <span class="flex items-center gap-3 text-2xl tracking-tight text-fg transition-colors group-hover/link:text-accent-200">
-                                {isActive(link.href) && (
-                                  <span class="size-2 bg-accent" aria-hidden="true" />
-                                )}
-                                {link.label}
-                              </span>
-                              <span class="mt-1 block text-sm text-muted">{link.description}</span>
+                            <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-line bg-ink text-muted transition-colors group-hover/link:text-fg">
+                              <Icon name={link.icon} class="size-[1.125rem]" aria-hidden="true" />
                             </span>
-                            <Icon
-                              name={link.external ? "ph:arrow-up-right" : "ph:arrow-right"}
-                              class="size-5 shrink-0 text-faint transition-all group-hover/link:translate-x-0.5 group-hover/link:text-fg"
-                              aria-hidden="true"
-                            />
+                            <span class="min-w-0">
+                              <span class="flex items-center gap-1 text-[0.9375rem] font-medium text-fg">
+                                {link.label}
+                                {link.external && (
+                                  <Icon
+                                    name="ph:arrow-up-right"
+                                    class="size-3.5 text-faint"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                              </span>
+                              <span class="mt-0.5 block text-sm leading-snug text-faint">
+                                {link.description}
+                              </span>
+                            </span>
                           </a>
                         </li>
                       ))}
                     </ul>
+
+                    <a
+                      href={group.featured.href}
+                      {...ext(group.featured.href)}
+                      class="group/card w-[19rem] self-start justify-self-end overflow-hidden rounded-xl border border-line bg-ink transition-colors hover:border-line-strong"
+                    >
+                      <div
+                        class="relative h-36 overflow-hidden border-b border-line"
+                        aria-hidden="true"
+                      >
+                        {group.featured.visual === "dashboard" && (
+                          <Image
+                            src={dashboardStaking}
+                            alt=""
+                            widths={[400, 600]}
+                            sizes="304px"
+                            class="size-full object-cover object-left-top transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.03]"
+                          />
+                        )}
+                        {group.featured.visual === "apps" && (
+                          <div class="grid size-full grid-cols-6 content-center gap-2 bg-surface-2 px-4 transition-transform duration-700 ease-out-expo group-hover/card:scale-[1.03]">
+                            {menuApps.map((a) => (
+                              <AppIcon src={a.icon} size={36} ring={false} />
+                            ))}
+                          </div>
+                        )}
+                        {group.featured.visual === "code" && <PostCover seed="build-menu" />}
+                      </div>
+                      <div class="flex items-start justify-between gap-3 p-4">
+                        <span>
+                          <span class="block text-[0.9375rem] font-medium text-fg">
+                            {group.featured.title}
+                          </span>
+                          <span class="mt-0.5 block text-sm leading-snug text-faint">
+                            {group.featured.description}
+                          </span>
+                        </span>
+                        <Icon
+                          name={
+                            group.featured.href.startsWith("http")
+                              ? "ph:arrow-up-right"
+                              : "ph:arrow-right"
+                          }
+                          class="mt-0.5 size-4 shrink-0 text-faint transition-colors group-hover/card:text-fg"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    </a>
                   </div>
                 </div>
               </li>
@@ -284,23 +294,41 @@ const linkAttrs = (l: NavLink) => ext(l.href);
 </header>
 
 <style>
+  /*
+   * Opening from closed: the backdrop grows from 0 and the content fades in.
+   * Moving between dropdowns: the old content slides out and the new one slides in from the
+   * side it is on (--menu-shift, set by the script), while the backdrop changes height.
+   */
   .menu-panel {
     visibility: hidden;
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateX(var(--menu-shift, 0px));
     transition:
-      opacity 0.2s ease,
-      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-      visibility 0s linear 0.2s;
+      opacity 0.22s ease,
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.22s;
   }
   .menu-panel[data-open] {
     visibility: visible;
     opacity: 1;
     transform: none;
     transition:
-      opacity 0.2s ease,
-      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s ease 0.05s,
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       visibility 0s;
+  }
+  .menu-backdrop {
+    height: 0;
+    opacity: 0;
+    transition:
+      height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.2s ease 0.1s;
+  }
+  .menu-backdrop[data-open] {
+    opacity: 1;
+    transition:
+      height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.15s ease;
   }
   .menu-scrim {
     opacity: 0;
@@ -320,16 +348,39 @@ const linkAttrs = (l: NavLink) => ext(l.href);
   const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   let closeTimer = 0;
 
+  const backdrop = document.querySelector<HTMLElement>("[data-menu-backdrop]");
+  const panelOf = (it: HTMLElement) => it.querySelector<HTMLElement>("[data-menu-panel]")!;
+  const openItem = () => items.find((it) => panelOf(it).hasAttribute("data-open"));
+  const SHIFT = 56; // px the content slides when moving between dropdowns
+
   const setOpen = (item: HTMLElement | null) => {
-    for (const it of items) {
-      const open = it === item;
-      it.querySelector("[data-menu-trigger]")?.setAttribute("aria-expanded", String(open));
-      it.querySelector("[data-menu-panel]")?.toggleAttribute("data-open", open);
+    const prev = openItem();
+    if (prev === item) return;
+    const dir = prev && item ? Math.sign(items.indexOf(item) - items.indexOf(prev)) : 0;
+
+    if (prev) {
+      // Leave towards the opposite side of where the new dropdown is.
+      panelOf(prev).style.setProperty("--menu-shift", `${-dir * SHIFT}px`);
+      panelOf(prev).removeAttribute("data-open");
+      prev.querySelector("[data-menu-trigger]")?.setAttribute("aria-expanded", "false");
     }
+    if (item) {
+      const panel = panelOf(item);
+      // Start on the side the dropdown comes from, without animating to that start position.
+      panel.style.transition = "none";
+      panel.style.setProperty("--menu-shift", `${dir * SHIFT}px`);
+      void panel.offsetWidth;
+      panel.style.transition = "";
+      panel.setAttribute("data-open", "");
+      item.querySelector("[data-menu-trigger]")?.setAttribute("aria-expanded", "true");
+      if (backdrop) backdrop.style.height = `${panel.offsetHeight}px`;
+    } else if (backdrop) {
+      backdrop.style.height = "0px";
+    }
+    backdrop?.toggleAttribute("data-open", !!item);
     bar?.toggleAttribute("data-open", !!item);
     scrim?.toggleAttribute("data-open", !!item);
   };
-  const openItem = () => items.find((it) => it.querySelector("[data-menu-panel][data-open]"));
 
   for (const item of items) {
     const trigger = item.querySelector<HTMLButtonElement>("[data-menu-trigger]")!;
@@ -362,6 +413,14 @@ const linkAttrs = (l: NavLink) => ext(l.href);
     const it = openItem();
     if (it && next && !it.contains(next)) setOpen(null);
   });
+
+  // ---- Bar background and line only once the page is scrolled ----
+  const sentinel = document.querySelector("[data-top-sentinel]");
+  if (sentinel && bar) {
+    new IntersectionObserver(([entry]) =>
+      bar.toggleAttribute("data-scrolled", !entry.isIntersecting),
+    ).observe(sentinel);
+  }
 
   // ---- Mobile menu ----
   const toggle = document.querySelector<HTMLButtonElement>("[data-mobile-toggle]");

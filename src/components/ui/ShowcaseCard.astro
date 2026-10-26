@@ -1,0 +1,66 @@
+---
+/**
+ * A floating panel used as a TabShowcase visual: a title bar and either a list of rows
+ * (logo, name, meta, tag) or a grid of app icons. Always filled from real data files
+ * (wallets, venues, ecosystem), never invented entries.
+ */
+import BrandIcon from "./BrandIcon.astro";
+import AppIcon from "./AppIcon.astro";
+
+export interface ShowcaseRow {
+  logo: string;
+  onLight?: boolean;
+  label: string;
+  meta?: string;
+  tag?: string;
+}
+
+interface Props {
+  title: string;
+  /** Small text on the right of the title bar. */
+  aside?: string;
+  rows?: ShowcaseRow[];
+  icons?: string[];
+  class?: string;
+}
+const { title, aside, rows = [], icons = [], class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "w-full max-w-md overflow-hidden rounded-xl border border-line-strong bg-ink/90 shadow-[0_40px_100px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl",
+    className,
+  ]}
+>
+  <div class="flex items-center justify-between border-b border-line px-4 py-3">
+    <span class="text-sm font-medium text-fg">{title}</span>
+    {aside && <span class="font-mono text-xs text-faint">{aside}</span>}
+  </div>
+
+  {rows.length > 0 && (
+    <ul class="divide-y divide-line">
+      {rows.map((row) => (
+        <li class="flex items-center gap-3 px-4 py-3">
+          <BrandIcon src={row.logo} onLight={row.onLight} />
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-medium text-fg">{row.label}</span>
+            {row.meta && <span class="block truncate text-xs text-faint">{row.meta}</span>}
+          </span>
+          {row.tag && (
+            <span class="rounded-md border border-line-strong px-2 py-0.5 font-mono text-[0.6875rem] text-muted">
+              {row.tag}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {icons.length > 0 && (
+    <div class="grid grid-cols-4 gap-3 p-4 sm:grid-cols-5">
+      {icons.map((src) => (
+        <AppIcon src={src} size={52} class="w-full! h-auto! aspect-square" />
+      ))}
+    </div>
+  )}
+</div>

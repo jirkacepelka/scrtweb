@@ -1,0 +1,81 @@
+---
+import { Icon } from "astro-icon/components";
+import PageLayout from "../layouts/PageLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Card from "../components/ui/Card.astro";
+import Button from "../components/ui/Button.astro";
+import StepList from "../components/sections/StepList.astro";
+import CtaBand from "../components/sections/CtaBand.astro";
+import { channels, governanceSteps, contribute } from "../data/about";
+import { social } from "../config/site";
+---
+
+<PageLayout
+  title="Community"
+  intro="Secret is built and governed by the people who use it. Join the chat, follow the forum and vote on what happens next."
+  description="Join the Secret Network community: Telegram, forum, X and YouTube, and how on-chain governance works."
+>
+  <Fragment slot="actions">
+    <Button href={social.telegram} size="lg">
+      Join on Telegram
+    </Button>
+    <Button href={social.forum} size="lg" variant="secondary">
+      Forum
+    </Button>
+  </Fragment>
+
+  <Section>
+    <SectionHeading title="Where to find us" class="mb-12 md:mb-16" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {channels.map((c, i) => (
+        <Card href={c.href} class="flex items-start gap-5 p-6!" style={`--reveal-i:${i}`}>
+          <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-line-strong bg-ink text-fg">
+            <Icon name={c.icon} class="size-5" aria-hidden="true" />
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center justify-between gap-3 font-medium text-fg">
+              {c.name}
+              <Icon
+                name="ph:arrow-up-right"
+                class="size-4 text-faint transition-colors group-hover:text-fg"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="mt-1 block text-sm leading-relaxed text-muted">{c.description}</span>
+          </span>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-20">
+      <SectionHeading
+        title="How governance works"
+        intro="Changes to the network, from parameters to upgrades like Secret 2.0, are decided by proposals that SCRT stakers vote on."
+      />
+      <StepList steps={governanceSteps} layout="stack" />
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionHeading title="Ways to help" class="mb-12 md:mb-16" />
+    <div class="grid gap-4 md:grid-cols-3">
+      {contribute.map((c, i) => (
+        <Card href={c.href} class="flex flex-col p-6!" style={`--reveal-i:${i}`}>
+          <Icon name={c.icon} class="size-6 text-accent-300" aria-hidden="true" />
+          <h3 class="type-h3 mt-10 text-fg">{c.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{c.body}</p>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <CtaBand
+    title="Your stake is your vote"
+    body="Stake SCRT to help secure the network and take part in every decision."
+    primary={{ label: "Staking", href: "/staking" }}
+    secondary={{ label: "Secret Foundation", href: "/foundation" }}
+  />
+</PageLayout>
