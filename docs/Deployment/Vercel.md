@@ -6,6 +6,12 @@ tags: [deployment]
 
 The site is static HTML built by Astro, deployed with the `@astrojs/vercel` adapter. There are no servers or functions to maintain.
 
+## Current deployment
+
+- Vercel project: **scrtweb** (team "jiri's projects"), linked to GitHub `jirkacepelka/scrtweb`
+- Production: https://scrtweb.vercel.app (every push to `main`)
+- Other branches get preview URLs; team-scoped URLs are behind Vercel's default deployment protection
+
 ## First-time setup
 
 1. Push the repository to GitHub (or GitLab/Bitbucket).

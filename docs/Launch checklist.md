@@ -30,5 +30,5 @@ Before this site replaces the current scrt.network.
 - [ ] Add the domain in Vercel and switch DNS. See [[Vercel#Domain]]
 - [ ] Decide on analytics (Vercel Web Analytics is privacy-friendly and cookie-free; it is off by default in `astro.config.mjs`)
 - [ ] Test social previews (OG image) with a link preview tool after deploying
-- [ ] After the first deploy, check the security headers from `vercel.json` are served (`curl -I https://<domain>/` should show `X-Frame-Options`, `Referrer-Policy`…). They are not part of the adapter's build output, so confirm Vercel applies them
-- [ ] Check the redirects work on the deployed site: `/get-scrt`, `/about/get-scrt`, `/ecosystem/exchanges`, `/ecosystem/wallets`
+- [x] Security headers from `vercel.json` are served (verified on scrtweb.vercel.app, 2026-10-26). Re-check once on the final domain
+- [x] Redirects work on the deployed site (`/get-scrt`, `/about/get-scrt`, `/ecosystem/exchanges`, `/ecosystem/wallets` all return 301; verified 2026-10-26)
