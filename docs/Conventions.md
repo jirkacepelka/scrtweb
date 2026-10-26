@@ -6,13 +6,13 @@ tags: [development]
 
 ## Files and naming
 
-| Thing         | Convention                            | Example                              |
-| ------------- | ------------------------------------- | ------------------------------------ |
-| Components    | PascalCase `.astro`                   | `StatStrip.astro`                    |
-| Pages         | kebab-case, matches the URL           | `ecosystem.astro` → `/ecosystem`     |
-| Data files    | kebab-case `.ts`, export typed arrays | `get-scrt.ts` exports `acquirePaths` |
-| Blog posts    | kebab-case slug                       | `how-to-stake-scrt.md`               |
-| Roadmap items | `YYYY-qN-short-name.md`               | `2027-q1-apps.md`                    |
+| Thing         | Convention                                 | Example                                      |
+| ------------- | ------------------------------------------ | -------------------------------------------- |
+| Components    | PascalCase `.astro`                        | `StatStrip.astro`                            |
+| Pages         | kebab-case, matches the URL                | `ecosystem.astro` → `/ecosystem`             |
+| Data files    | kebab-case `.ts`, export typed arrays      | `get-scrt.ts` exports `acquirePaths`         |
+| Blog posts    | kebab-case slug                            | `how-to-stake-scrt.md`                       |
+| Roadmap items | `id` in `content/roadmap.yaml`, kebab-case | `secret-money` (anchor `#arch-secret-money`) |
 
 ## Code
 

@@ -35,7 +35,7 @@ Bordered container. With `href` the whole card is a link with a hover state.
 </Card>
 ```
 
-`tone`: `default` (surface), `accent` (orange tint, for the recommended option), `plain` (border only).
+`tone`: `default` (surface), `accent` (orange tint, for the recommended option), `plain` (border only). `style` passes through (use it for `--reveal-i` staggering). The card itself has `data-reveal`.
 
 ## Badge
 
@@ -47,7 +47,7 @@ Small mono label. `tone`: `neutral`, `accent`, `soon`.
 
 ## Section
 
-Wraps every page section with consistent vertical padding and the page container.
+Wraps every page section with consistent vertical padding and the page container. Props: `id?`, `spacing` (`lg` default: `py-20 md:py-32`; `md`: `py-16 md:py-20`), `class?`, `as` (`section`/`div`). Use `class="pt-0!"` when a section continues the one above it.
 
 ```astro
 <Section id="faq" spacing="md" class="border-t border-line">
@@ -77,7 +77,11 @@ import dashboardStaking from "../assets/screens/dashboard-staking.png";
 <BrowserFrame src={dashboardStaking} alt="…" url="dash.scrt.network/staking" />
 ```
 
-Props: `src`, `alt`, `url?`, `eager?` (use for the hero image only), `class?`.
+Props: `src`, `alt`, `url?`, `eager?` (only for an image visible on first load), `class?`.
+
+## AppIcon
+
+An ecosystem app icon as a rounded square (iOS-style corners). Icons are pre-normalised by the sync script, see [[Ecosystem]]. Props: `src`, `alt?`, `size` (px, default 56), `ring` (hairline ring for dark icons on dark cards, default on; off where icons float freely, as in the hero), `eager?`, `class?`, `style?`.
 
 ## Stat
 

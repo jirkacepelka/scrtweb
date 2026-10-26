@@ -6,16 +6,18 @@ tags: [content]
 
 Everything that isn't long-form text lives in typed TypeScript files. Edit the array, save, done. TypeScript (and `npm run check`) catches typos in field names.
 
-| File                   | Controls                                                                                                                                     |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/config/site.ts`   | Site name, description, header nav, header button, footer columns, socials, shared external links, legacy links                              |
-| `src/data/about.ts`    | Copy for /foundation, /community, /grants and /brand (roles, channels, governance steps, grant areas, logo files, brand colours, logo rules) |
-| `src/data/secret2.ts`  | Copy for /secret-2: draft notice, how it works, impact per audience, known limits                                                            |
-| `src/data/wallets.ts`  | Wallet cards on `/wallets`                                                                                                                   |
-| `src/data/get-scrt.ts` | Exchanges, card on-ramps, DEX and bridge ("Get SCRT" on `/scrt`)                                                                             |
-| `src/data/stats.ts`    | Network and token figures (homepage, `/scrt`, `/staking`)                                                                                    |
-| `src/data/builders.ts` | Resources and feature list on `/builders`                                                                                                    |
-| `src/data/partners.ts` | Partner strip in the homepage hero                                                                                                           |
+| File                    | Controls                                                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/config/site.ts`    | Site name, description, header nav, header button, footer columns, socials, shared external links, legacy links                              |
+| `src/data/about.ts`     | Copy for /foundation, /community, /grants and /brand (roles, channels, governance steps, grant areas, logo files, brand colours, logo rules) |
+| `src/data/secret2.ts`   | Copy for /secret-2: draft notice, how it works, impact per audience, known limits                                                            |
+| `src/data/wallets.ts`   | Wallet cards on `/wallets`                                                                                                                   |
+| `src/data/get-scrt.ts`  | Exchanges, card on-ramps, DEX and bridge ("Get SCRT" on `/scrt`)                                                                             |
+| `src/data/stats.ts`     | Network and token figures (`/scrt`, `/staking`, governance figures on `/community`)                                                          |
+| `src/data/builders.ts`  | Resources and feature list on `/builders`                                                                                                    |
+| `src/data/partners.ts`  | Partner strip in the homepage hero                                                                                                           |
+| `src/data/ecosystem.ts` | Editorial choices on top of the dApp registry, see [[Ecosystem]]                                                                             |
+| `src/data/roadmap.ts`   | Roadmap intro, track names and `roadmapAsOf`; the components are in `src/content/roadmap.yaml`, see [[Roadmap items]]                        |
 
 ## Wallets
 
@@ -26,7 +28,8 @@ Everything that isn't long-form text lives in typed TypeScript files. Edit the a
   description: "…one or two sentences…",
   platforms: ["Extension", "Mobile"],   // Extension | Mobile | Desktop | Hardware
   bestFor: "Most people",
-  recommended: true,                    // orange card; use for one wallet only
+  logo: "/logos/keplr.png",             // square PNG in public/logos/
+  recommended: true,                    // shown large; use for one wallet only
 }
 ```
 
@@ -38,8 +41,8 @@ In `get-scrt.ts`, each path (exchange, card, DEX, bridge) has a `venues` list. T
 
 ```ts
 venues: [
-  { name: "Kraken", href: "https://www.kraken.com/" },
-  { name: "New Exchange", href: "https://…" },
+  { name: "Kraken", href: "https://www.kraken.com/", logo: "/logos/kraken.png" },
+  { name: "New Exchange", href: "https://…", logo: "/logos/new-exchange.png" },
 ],
 ```
 

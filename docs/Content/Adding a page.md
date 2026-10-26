@@ -32,9 +32,9 @@ import { apps } from "../data/apps";
 </PageLayout>
 ```
 
-3. **Add it to navigation** in `src/config/site.ts` (a `navGroups` entry, `navLinks` and/or `footerNav`).
+3. **Add it to navigation** in `src/config/site.ts`: a link in the right `navGroups` group (`label` = the page title, a one-line `description`, an `icon`). The footer follows automatically. See [[ADR-005 Navigation structure]] for which group fits.
 4. **Check** with `npm run dev`, at desktop and phone width.
-5. **Document** any new section component in [[Section components]].
+5. **Document** the page in [[Pages]] and any new section component in [[Section components]].
 
 The sitemap picks the page up automatically.
 
@@ -44,4 +44,6 @@ The sitemap picks the page up automatically.
 - One primary action.
 - Different section layouts in sequence, not the same card grid three times.
 - At most one eyebrow per three sections, one `CtaBand` at the end.
+- Uses the existing patterns ([[Design System#Recurring patterns]]) and nothing from the rejected list in [[Style guardrails]].
+- Copy that may change lives in a data file (`src/data/`), not in the page.
 - Copy follows [[Design System#Copy rules]].

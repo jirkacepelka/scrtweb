@@ -10,7 +10,7 @@ Before this site replaces the current scrt.network.
 
 - [ ] Review the roadmap figures and `roadmapAsOf` right before launch. See [[Roadmap items]]
 - [ ] Review the three starter blog posts, or migrate the existing posts from the old blog. See [[How to write a blog post]]
-- [ ] Confirm the **Live / Coming soon** status of each card in the homepage "What you can do on Secret" grid (`src/pages/index.astro`, `features`)
+- [ ] Confirm the Secret 2.0 copy and draft status with the core team (`src/data/secret2.ts`). See [[ADR-007 Secret 2.0 shown as a draft]]
 - [ ] Confirm the partner list (`src/data/partners.ts`) is current and approved
 - [ ] Re-check network figures and update `statsAsOf`. See [[Editing data#Network figures]]
 - [ ] Verify the YouTube channel URL in `src/config/site.ts`
@@ -24,7 +24,7 @@ Before this site replaces the current scrt.network.
 - [x] **Media kit** (`/media-package/`) → `/brand`, **Secret³ Foundation** (`/about/secret-network-foundation/`) → `/foundation`: pages built, redirects added in `astro.config.mjs`
 - [ ] Ask the foundation to confirm the copy on `/foundation`, `/grants` and `/community` (it only restates the old site; no team names or grant sizes were published there)
 - [ ] **Privacy policy** (`/privacy/`): move the legal text to a page here
-- [ ] Decide what to do with the other old URLs (media kit, Secret³ Foundation, builders, blog post URLs) and add redirects in `vercel.json`. See [[Vercel#vercel.json]]
+- [ ] Decide what to do with the remaining old URLs (`/builders` already matches; old blog post URLs, `/about/media-coverage/`) and add redirects in `astro.config.mjs`. See [[Vercel#Redirects and vercel.json]]
 
 ## Technical
 

@@ -4,7 +4,7 @@ tags: [components]
 
 # Section components
 
-Location: `src/components/sections/`. Each is one block of a page. Pages pass content in as props; sections never import page-specific data themselves.
+Location: `src/components/sections/`. Each is one block of a page. Pages pass content in as props; sections never import page-specific data themselves. A block becomes a section component once two pages need it (see [[Architecture#The three rules]]).
 
 Layout variety matters: on one page, avoid using the same section type twice in a row, and use at most one marquee.
 
@@ -23,7 +23,7 @@ Homepage only, inspired by getartcraft.com. Full-bleed (edge to edge, no rounded
   title="Privacy for everyone.<br /><em>Start with SCRT.</em>"
   subtitle="…under 20 words…"
   primary={{ label: "Get SCRT", href: "/scrt#get-scrt" }}
-  secondary={{ label: "Explore apps", href: "/ecosystem" }}
+  secondary={{ label: "Explore Ecosystem", href: "/ecosystem" }}
   apps={heroApps}
   partners={partners}
 />
@@ -46,7 +46,10 @@ The pointer interacts with the wave itself, not just a highlight:
 | ----------- | ------- | --------------------------------------------- |
 | `intensity` | `1`     | 0..1, how strongly the wave turns dots orange |
 | `spacing`   | `14`    | distance between dots in CSS px               |
+| `base`      | `0.02`  | background grey 0..1 (0.02 = the page's ink)  |
 | `class`     | none    | extra classes on the wrapper                  |
+
+Where it is used and at which settings: [[Design System#Panels and the shader]].
 
 Performance and accessibility:
 
@@ -58,32 +61,25 @@ Performance and accessibility:
 
 ## StepList
 
-Ordered steps where the step title _is_ the label (no "Step 1").
+A numbered vertical list with a connecting line, where the step title _is_ the label (no "Step 1"). Used for the staking guide and the governance steps on `/community`.
 
-- `layout="row"`: three columns with hairline dividers (homepage).
-- `layout="stack"`: numbered vertical list with a connecting line (staking guide).
-
-Each step: `{ title, body, icon?, href?, linkLabel? }`.
+Each step: `{ title, body, href?, linkLabel? }`.
 
 ## PrivacySplit
 
-Explainer on the left, "Encrypted" vs "Still public" lists on the right. Props: `eyebrow?`, `title`, `body`, `privateItems`, `publicItems`, `cta?`. Content must follow [[Privacy claims]].
+Explainer on the left, "Encrypted" vs "Still public" lists on the right. Used on `/builders`. Props: `eyebrow?`, `title`, `body`, `privateItems`, `publicItems`, `cta?`. Content must follow [[Privacy claims]].
 
 ## StatStrip
 
-Row of figures with a source and date line. Props: `stats`, `asOf?`, `source?`. Data from `data/stats.ts`, see [[Editing data#Network figures]].
-
-## FeatureGrid
-
-Bento grid built for **exactly four** items: one wide, one tall, two normal. Each item: `{ title, body, icon, status: "live" | "soon", href?, visual?: "glow" | "grid" | "plain" }`. Give at least two cells a `visual` so the grid doesn't look flat.
+Row of figures with a source and date line. Props: `stats`, `asOf?`, `source?`. Data from `data/stats.ts`, see [[Editing data#Network figures]]. Place it inside a rounded card within the content width (as on `/staking`), never as a full-width band.
 
 ## PostCard
 
 Blog teaser. Uses the post's `cover`, or a generated [[UI primitives#PostCover]]. `variant`:
 
-- `card` (default): compact vertical card for three-column grids (homepage, `/blog`).
+- `card` (default): compact vertical card for the `/blog` grid.
 - `featured`: horizontal, spans the grid row (newest post on `/blog`).
-- `row`: small thumbnail + date + title, for the "Keep reading" list under a post.
+- `row`: small thumbnail + date + title, for the homepage "Latest" list and "Keep reading" under a post.
 
 ## BlogIndex
 
@@ -91,7 +87,7 @@ Tag filter chips + post grid + empty state. Used by `/blog` and `/blog/tags/[tag
 
 ## RoadmapSummary
 
-Secret 2.0 readiness at a glance: "Overall" plus one figure per track, each with a thin progress line, and the date of the figures. Props: `overall`, `tracks` (both from `getRoadmap()`), `linkTracks` (link each figure to its section on `/roadmap`), `size` (`md` default; `sm` for sitting next to text on one row). Used on `/roadmap` (sm) and the homepage (md).
+Secret 2.0 readiness at a glance: "Overall" plus one figure per track, each with a thin progress line, and the date of the figures. Props: `overall`, `tracks` (both from `getRoadmap()`), `linkTracks` (link each figure to its section on `/roadmap`), `size` (`md` default; `sm` for sitting next to text on one row). Used on `/roadmap` (`sm`). The homepage has its own compact roadmap card in `index.astro`.
 
 ## RoadmapTracks
 
@@ -99,7 +95,7 @@ The full roadmap as collapsible tracks (native `<details>`, closed by default; `
 
 ## CtaBand
 
-Closing call to action above the footer. **One per page.** Props: `title`, `body?`, `primary`, `secondary?`.
+Closing call to action above the footer. **One per inner page**, always last (the homepage has none, see [[ADR-006 Homepage as a hub]]). Props: `title`, `body?`, `primary`, `secondary?`.
 
 ## TabShowcase
 

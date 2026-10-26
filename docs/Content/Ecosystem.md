@@ -4,7 +4,7 @@ tags: [content]
 
 # Ecosystem
 
-The `/ecosystem` page, the floating icons in the homepage hero and the Ecosystem menu card all use one list of apps.
+The `/ecosystem` page, the orbiting icons in the homepage hero, the "Use private apps" step on the homepage and the Ecosystem card in the About menu all use one list of apps.
 
 ## Where the list comes from
 
@@ -28,13 +28,13 @@ Never edit the generated JSON by hand: the next sync overwrites it. Commit both 
 
 ## Editorial choices: `src/data/ecosystem.ts`
 
-| Setting          | What it does                                                                                |
-| ---------------- | ------------------------------------------------------------------------------------------- |
-| `hidden`         | Slugs not shown on the site (currently the testnet faucet, and Mintscan, which is retiring) |
-| `spotlightSlugs` | The four large cards at the top of `/ecosystem`                                             |
-| `heroSlugs`      | Which icons float around the homepage hero, in placement order (18 slots)                   |
-| `overrides`      | Per-app fixes: nicer name, rewritten description, category                                  |
-| `appCategories`  | The filter chips on `/ecosystem`                                                            |
+| Setting          | What it does                                                                                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hidden`         | Slugs not shown on the site (currently the testnet faucet, and Mintscan, which is retiring)                                                              |
+| `spotlightSlugs` | The four large cards at the top of `/ecosystem`                                                                                                          |
+| `heroSlugs`      | Which icons orbit the homepage hero, in placement order (18 slots). The first 15 also fill the "Use private apps" step, the first 18 the About menu card |
+| `overrides`      | Per-app fixes: nicer name, rewritten description, category                                                                                               |
+| `appCategories`  | The filter chips on `/ecosystem`                                                                                                                         |
 
 Categories come from registry tags (`Wallet` → Wallets, `DeFi` → DeFi, `NFTs`/`Data` → Data & NFTs, otherwise Network tools) unless an override sets one.
 

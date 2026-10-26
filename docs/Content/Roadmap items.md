@@ -42,7 +42,8 @@ The "Overall" and per-track percentages are **averages computed from the YAML** 
 ## Where it appears
 
 - `/roadmap`: one row with the "How Secret 2.0 is built" note (`roadmapIntro` in `src/data/roadmap.ts`) next to the readiness summary. Below, the three tracks as **collapsible rows, closed by default** (track name, component count, average). Open a track to see compact cards (name, status, readiness); click a card for a popup with the summary and the connected components, which open in turn. "See every component" expands all tracks.
-- Homepage: the readiness summary as a teaser, linking to each track.
+- Homepage: a compact roadmap card in "Latest" (overall and per-track readiness), linking to `/roadmap`.
+- `/secret-2`: the `networks` track as the rollout list (Alphanet, Testnet, Mainnet).
 
 Deep links open the right place automatically:
 

@@ -33,6 +33,12 @@ node scripts/generate-brand-assets.mjs
 
 This rewrites `public/favicon.svg`, `public/apple-touch-icon.png` and `public/og-default.png`.
 
+After changing a logo SVG in `public/brand/`, re-render the PNG downloads for `/brand`:
+
+```bash
+node scripts/generate-logo-pngs.mjs
+```
+
 ## Refreshing ecosystem apps
 
 ```bash
@@ -50,4 +56,4 @@ See [[Ecosystem]].
 | A Tailwind colour class does nothing (`bg-blue-500`) | Only brand tokens exist. See [[Design System#Colour]]                                                            |
 | Styles look stale                                    | Stop the dev server, delete `.astro/`, start again                                                               |
 
-Related: [[Conventions]], [[Architecture]].
+Related: [[Working on this site]], [[Conventions]], [[Architecture]].

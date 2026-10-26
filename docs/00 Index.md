@@ -8,9 +8,12 @@ This vault explains how the website works and how to maintain it. Open the `docs
 
 ## Start here
 
+- [[Working on this site]]: **read first.** Rules, typical tasks and the definition of done, for developers and AI agents
 - [[Local setup]]: install, run and build the site on your machine
 - [[Architecture]]: stack, folder structure and the rules that keep it maintainable
 - [[Design System]]: colours, type, spacing, radius, motion and when to use what
+- [[Style guardrails]]: what the site should and shouldn't look like, including rejected directions
+- [[Pages]]: every page, its purpose, sections and data sources
 - [[Launch checklist]]: what must be done before this replaces scrt.network
 
 ## Everyday tasks
@@ -31,4 +34,4 @@ This vault explains how the website works and how to maintain it. Open the `docs
 
 - Components: [[UI primitives]], [[Section components]], [[Layouts]]
 - [[Conventions]]: naming, formatting, commits
-- Decisions: [[ADR-001 Astro and static output]], [[ADR-002 Tailwind v4 with CSS tokens]], [[ADR-003 Content in the repo]], [[ADR-004 Dark-only theme]]
+- Decisions: [[ADR-001 Astro and static output]], [[ADR-002 Tailwind v4 with CSS tokens]], [[ADR-003 Content in the repo]], [[ADR-004 Dark-only theme]], [[ADR-005 Navigation structure]], [[ADR-006 Homepage as a hub]], [[ADR-007 Secret 2.0 shown as a draft]], [[ADR-008 Figures from the chain]]

@@ -4,7 +4,7 @@ tags: [design]
 
 # Design System
 
-The direction: **a dark, calm infrastructure site that explains things simply.** Layout clarity from aero.xyz (one big message per section, plenty of air), the technical credibility of Akash, and the existing Secret brand colours. Orange is the accent, used sparingly.
+The direction: **a dark, calm infrastructure site that explains things simply.** Layout clarity from aero.xyz (one big message per section, plenty of air), the technical credibility of Akash, and the existing Secret brand colours. Orange is the accent, used sparingly. References are inspiration, never templates: see [[Style guardrails]] for the concrete do's and don'ts and the directions that were rejected.
 
 All tokens live in `src/styles/tokens.css`. Tailwind v4 turns each one into utilities automatically: `--color-accent` → `bg-accent`, `text-accent`, `border-accent`…
 
@@ -16,8 +16,8 @@ Taken from the current scrt.network CSS (`--orange #ff3912`, `--secondary-orange
 | ------------- | --------- | ------------------------------------------- |
 | `ink`         | `#050505` | Page background                             |
 | `surface`     | `#0d0d0d` | Cards, raised blocks                        |
-| `surface-2`   | `#161616` | Hover state of cards                        |
-| `surface-3`   | `#222426` | Strong fills                                |
+| `surface-2`   | `#161616` | Panels (page headers, CtaBand), card hover  |
+| `surface-3`   | `#222426` | Strong fills (open nav trigger)             |
 | `line`        | white 9%  | Hairlines and borders                       |
 | `line-strong` | white 16% | Button outlines, emphasised borders         |
 | `fg`          | `#f4f3f1` | Primary text                                |
@@ -50,8 +50,8 @@ Headings use named utilities from `global.css`. Don't combine size, weight and t
 
 | Class          | Use                                   | Size (fluid) | Weight     |
 | -------------- | ------------------------------------- | ------------ | ---------- |
-| `type-display` | Homepage hero `h1` only               | 44 → 92px    | 400        |
-| `type-h1`      | Inner page `h1`, post title           | 40 → 72px    | 400        |
+| `type-display` | Hero `h1` and inner page titles       | 44 → 92px    | 400        |
+| `type-h1`      | Blog post title, 404 page             | 40 → 72px    | 400        |
 | `type-h2`      | Section headings, CTA band, big stats | 32 → 56px    | 400        |
 | `type-h3`      | Card and step titles                  | 22px         | 500        |
 | `type-lead`    | Intro paragraphs under headings       | 17 → 20px    | 400, muted |
@@ -88,6 +88,7 @@ One system, applied everywhere:
 - Content width: `container-page` utility (max 76rem, 16px gutter on mobile, 32px from `md`).
 - Section rhythm: `<Section>` gives `py-20 md:py-32` (`spacing="lg"`) or `py-16 md:py-20` (`spacing="md"`).
 - Separate sections with `border-t border-line` rather than changing background colour. The page has one theme; sections never invert.
+- Inside the content sheet of an inner page, nothing runs edge to edge: no full-width tinted bands or borders. Group things in a rounded card within the content width instead.
 - Every multi-column layout collapses to one column below `md` (768px) or `lg` (1024px).
 
 ## Buttons
@@ -102,7 +103,7 @@ One system, applied everywhere:
 
 External links (starting with `http`) automatically open in a new tab and get an ↗ arrow and screen-reader text.
 
-**One label per intent.** If "Get SCRT" means "go to /scrt#get-scrt", use exactly "Get SCRT" everywhere, not "Buy SCRT" in one place and "Get tokens" in another.
+**One label per intent.** If "Get SCRT" means "go to /scrt#get-scrt", use exactly "Get SCRT" everywhere, not "Buy SCRT" in one place and "Get tokens" in another. A button that names its destination uses the page name exactly ("Roadmap", "Grants", "Explore Ecosystem"); an action button may pair a verb with it ("Start staking", "Choose a wallet").
 
 ## Copy rules
 
@@ -119,22 +120,38 @@ Rationed: **at most one in every three sections**. A heading alone is usually en
 
 ## Panels and the shader
 
-The signature element: an **inset, rounded panel** (`rounded-[2.25rem]`, a few px from the viewport edge) filled with a live WebGL dot grid (`ShaderField`): small grey dots with a slow orange wave passing through them, which bends and ripples around the pointer.
+The signature element: an **inset, rounded panel** (`rounded-[2.25rem]`, a few px from the viewport edge) filled with a live WebGL dot grid ([[Section components#ShaderField]]): small grey dots with a slow orange wave passing through them, which bends and ripples around the pointer.
 
-It appears in exactly three places:
+It appears in exactly these places, and nowhere else:
 
-| Where                             | Intensity                      |
-| --------------------------------- | ------------------------------ |
-| Homepage hero (full-bleed)        | 0.6                            |
-| Inner page headers (`PageLayout`) | 0.55, darkened toward the text |
-| Closing `CtaBand` on every page   | 0.75                           |
+| Where                             | Shape                                                                   | Shader                                                       |
+| --------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Homepage hero                     | Full-bleed (no panel, no corners), extends under the transparent header | `intensity 0.6`, `base 0.03` (a touch lighter than the page) |
+| Inner page headers (`PageLayout`) | Rounded panel, content sheet overlaps its bottom                        | `intensity 0.45` at 50% opacity                              |
+| Blog post headers (`PostLayout`)  | Same as inner pages                                                     | `intensity 0.45` at 50% opacity                              |
+| Closing `CtaBand` on inner pages  | Rounded panel                                                           | `intensity 0.75` at 60% opacity                              |
 
-Panels have **no border**. They read as shapes because they are slightly lighter than the page (`bg-surface-2`) and carry an orange glow at the bottom. Don't add the panel to ordinary sections; its value comes from being rare. See [[Section components#ShaderField]] for performance details.
+Panels have **no border**. They read as shapes because they are slightly lighter than the page (`bg-surface-2`) and carry an orange glow at the bottom. Don't add the panel to ordinary sections; its value comes from being rare. The step switcher's stage (`TabShowcase`) uses a static CSS dot grid, not the shader.
+
+## Recurring patterns
+
+Reuse these instead of inventing new ones:
+
+| Pattern               | Classes / component                                                                                              | Used on                                             |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Card                  | `Card` (`rounded-xl border border-line bg-surface`), link cards get a hover state                                | Explore, Foundation, Community, Builders            |
+| Icon tile             | `inline-flex size-10 items-center justify-center rounded-lg border border-line-strong bg-ink` + Phosphor icon    | Cards, nav dropdown (smaller: `size-9 rounded-md`)  |
+| Hairline grid         | `grid gap-px overflow-hidden rounded-xl border border-line bg-line`, cells `bg-ink`                              | Grants areas, Secret 2.0 impact                     |
+| Numbered list         | `divide-y divide-line border-y border-line`, mono `01` numbers in `accent-300`                                   | Builders, Grants, Secret 2.0 rollout                |
+| Info box              | Card with a `Badge` and a secondary `Button` on the right                                                        | Secret 2.0 notices (Builders, Grants), Draft notice |
+| Figures               | `StatStrip` inside a card; always with a source and date                                                         | Staking                                             |
+| Orange icon on a card | `size-6 text-accent-300` icon, then `type-h3` title at a fixed distance (`mt-10`, not `mt-auto`) so titles align | Foundation, Community, Grants                       |
 
 ## Imagery
 
-- **App icons** from the ecosystem are the main imagery: floating in the homepage hero and in the Ecosystem menu card. They come from the official registry, see [[Ecosystem]].
-- **Real product screenshots** carry the story: what the user will actually see. They live in `src/assets/screens/` and are shown in `BrowserFrame`. Never build fake UI from divs.
+- **App icons** from the ecosystem are the main imagery: orbiting in the homepage hero, in the About menu card and in the Get started switcher. They come from the official registry, see [[Ecosystem]].
+- **Real product screenshots** carry the story: what the user will actually see. They live in `src/assets/screens/` and are shown in `BrowserFrame`. Never imitate a product's UI with divs.
+- **Data panels** are allowed where no screenshot exists: [[UI primitives#ShowcaseCard]] (lists of real wallets, venues or apps) and [[UI primitives#ArchDiagram]] (the Secret 2.0 layers). They show only entries from the data files, never invented ones.
 - To refresh a screenshot, capture the live page with headless Chrome at 2x and crop away banners and widgets:
 
 ```bash

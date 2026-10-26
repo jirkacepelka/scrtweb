@@ -34,7 +34,7 @@ For standard inner pages, in the Aero style:
 </PageLayout>
 ```
 
-**Rule: the visible title is the page's name, exactly as it appears in the navigation** (Ecosystem, Get SCRT, Wallets, Staking, Builders, Roadmap, Blog), so a link, a button and the heading it leads to always match. Put the selling line in `intro`, not in the title. `heading` exists only for pages whose name is dynamic (a blog tag).
+**Rule: the visible title is the page's name, exactly as it appears in the navigation** (for example SCRT, Wallets, Staking, Builders, Secret 2.0, Grants, Ecosystem, Roadmap, Secret Foundation, Community, Brand assets, Blog; the list is in [[Pages]]), so a link, a button and the heading it leads to always match. Put the selling line in `intro`, not in the title. `heading` exists only for pages whose name is dynamic (a blog tag).
 
 ## PostLayout
 
@@ -60,8 +60,14 @@ Aero-style, full width, sticky. Logo, then the navigation right after it, button
 
 - **At the top of the page** the bar is transparent with no bottom line (the homepage hero runs underneath it). Once the page scrolls, it gets a dark blurred background and a hairline (`data-scrolled`, set by an IntersectionObserver on a sentinel at the top of the page).
 
-- **Order:** Use SCRT · Build · (Provide, prepared but hidden) · About, then Blog as a plain link.
-- **Dropdowns** (`navGroups`): opening one expands the header into a full-width sheet. Columns keep fixed widths: the intro (under the logo) and the links sit on the left, the featured card is pushed to the right edge under the header buttons. Three columns from `xl` (two below, without the intro). Moving between dropdowns slides the content sideways while one shared backdrop (`data-menu-backdrop`) changes height: the group name with a one-line `intro`; the links in two columns (small icon tile, label, one-line description, an arrow for external links); and one `featured` card (visual: `dashboard` screenshot, `apps` icon grid or `code` pattern). Small type and quiet hover states on purpose: the earlier version with large links and coloured squares felt too playful.
+- **Order:** Use SCRT · Build · (Provide, prepared but hidden) · About, then Blog as a plain link. See [[ADR-005 Navigation structure]].
+- **Dropdowns** (`navGroups`): opening one expands the header into a full-width sheet with a rounded bottom. Contents:
+  - the group name and its one-line `intro` (from `xl`; hidden below),
+  - the links in two columns: small icon tile, label, one-line description, an arrow for external links,
+  - one `featured` card (visual: `dashboard` screenshot, `apps` icon grid or `code` pattern).
+- **Alignment:** columns keep fixed widths. The intro sits under the logo, the links right next to it, and the featured card is pushed to the right edge under the header buttons.
+- **Motion:** one shared backdrop (`data-menu-backdrop`) sits behind all dropdowns and animates its height. Moving between dropdowns slides the old content out and the new content in from the side it is on (`--menu-shift`), instead of closing one and opening the next.
+- Small type and quiet hover states on purpose; see [[Style guardrails#Header]].
 - While a dropdown is open, the page behind dims (`menu-scrim`, no blur).
 - Opens on hover (mouse) or click. Closes on Escape (focus returns to the trigger), outside click, or when keyboard focus leaves the sheet.
 - **Plain links** (`navLinks`) follow the dropdowns. **Buttons** (`headerActions`): a quiet text button and the orange primary.

@@ -48,17 +48,6 @@ export interface Stat {
   note?: string;
 }
 
-export const homeStats: Stat[] = [
-  {
-    value: `${network.activeValidators}`,
-    label: "Active validators",
-    note: `of ${network.maxValidators} slots`,
-  },
-  { value: `${network.unbondingDays} days`, label: "Unbonding period", note: "to unstake SCRT" },
-  { value: `${network.votingPeriodDays} days`, label: "Governance vote", note: "per proposal" },
-  { value: `${network.quorumPercent}%`, label: "Quorum", note: "of staked SCRT must vote" },
-];
-
 /** Facts on the SCRT page, grouped. */
 export const scrtFacts: { title: string; items: Stat[] }[] = [
   {
